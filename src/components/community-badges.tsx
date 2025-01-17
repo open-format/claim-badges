@@ -7,7 +7,7 @@ import { claimBadge } from "@/lib/openformat";
 import { getMetadata } from "@/lib/thirdweb";
 import { usePrivy } from "@privy-io/react-auth";
 import dayjs from "dayjs";
-import { Loader2 } from "lucide-react";
+import { HelpCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { startTransition, useEffect, useState } from "react";
 import { toast } from "sonner";
