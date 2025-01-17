@@ -217,7 +217,7 @@ async function fetchAllRewardsByCommunity(communityId: string): Promise<Reward[]
 
 export async function fetchUserProfile(slug: string) {
   const cookieStore = await cookies();
-  const currentUserAddress = cookieStore.get("address")?.value;
+  const currentUserAddress = cookieStore.get("address");
   const community = await getCommunity(slug);
   const chain = await getChainFromCommunityOrCookie();
 
@@ -286,7 +286,7 @@ export async function fetchUserProfile(slug: string) {
     rewards: Reward[];
     badges: Badge[];
   }>(chain.SUBGRAPH_URL, query, {
-    user: currentUserAddress.toLowerCase(),
+    user: currentUserAddress.value.toLowerCase(),
     community: community.id.toLowerCase(),
   });
 

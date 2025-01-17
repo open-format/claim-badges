@@ -5,7 +5,7 @@ import CommunityInfo from "@/components/community-info";
 import CommunityProfile from "@/components/community-profile";
 import Leaderboard from "@/components/leaderboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchCommunity, fetchUserProfile, generateLeaderboard } from "@/lib/openformat";
+import { fetchCommunity, fetchUserProfile } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
 
 export default async function CommunityPage() {
@@ -14,7 +14,6 @@ export default async function CommunityPage() {
   }
 
   const community = await fetchCommunity(process.env.NEXT_PUBLIC_COMMUNITY_ID);
-  const leaderboard = await generateLeaderboard(process.env.NEXT_PUBLIC_COMMUNITY_ID);
   const profile = await fetchUserProfile(process.env.NEXT_PUBLIC_COMMUNITY_ID);
 
   if (!community) {
@@ -60,7 +59,7 @@ export default async function CommunityPage() {
         </TabsList>
         <TabsContent value="leaderboard">
           <Leaderboard
-            data={leaderboard || []}
+            data={[]}
             metadata={{ user_label: community?.metadata?.user_label, token_label: community?.metadata?.token_label }}
             showSocialHandles={community?.metadata?.show_social_handles}
           />
