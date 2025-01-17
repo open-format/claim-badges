@@ -2,10 +2,11 @@
 
 import { CLAIM_CONDITIONS, ClaimStatus } from "@/constants/claim-conditions";
 import { useConfetti } from "@/contexts/confetti-context";
+import LoginModalDialog from "@/dialogs/login-modal-dialog";
 import { useRevalidate } from "@/hooks/useRevalidate";
 import { claimBadge } from "@/lib/openformat";
 import { getMetadata } from "@/lib/thirdweb";
-import { usePrivy } from "@privy-io/react-auth";
+import { Hooks } from "@matchain/matchid-sdk-react";
 import dayjs from "dayjs";
 import { HelpCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -19,6 +20,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
+const { useUserInfo } = Hooks;
+
 export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollectedStatus[] | undefined }) {
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
     const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
@@ -28,7 +31,6 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
     const ownsRequiredBadge = condition.mustOwnBadge
       ? badges?.some((b) => b.id === condition.mustOwnBadge && b.isCollected)
       : true;
-
     const withinDateRange =
       condition.claimableFrom && condition.claimableTo
         ? condition.claimableFrom <= now && now <= condition.claimableTo
@@ -93,7 +95,8 @@ function Item({
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [isClaiming, setIsClaiming] = useState<boolean>(false);
-  const { user, authenticated, login } = usePrivy();
+
+  const { address } = useUserInfo();
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -106,7 +109,7 @@ function Item({
         const response = await claimBadge(
           badge.id as Address,
           metadata?.name as string,
-          user?.wallet?.address as Address,
+          address as Address,
           metadataURI
         );
 
@@ -163,10 +166,10 @@ function Item({
         </CardDescription>
       </CardHeader>
       <CardFooter>
-        {!authenticated ? (
-          <Button className="w-full" onClick={login}>
-            Login to Claim
-          </Button>
+        {!address ? (
+          <LoginModalDialog>
+            <Button className="w-full">Login to Claim</Button>
+          </LoginModalDialog>
         ) : (
           <div className="flex flex-col gap-2 w-full">
             <TooltipProvider>

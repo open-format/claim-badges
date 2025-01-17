@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useCurrentChain } from "@/hooks/useCurrentChain";
+import { ChainName, getChain } from "@/constants/chains";
 import { addressSplitter, desanitizeString, timeAgo } from "@/lib/utils";
 import { CoinsIcon, ExternalLinkIcon, TrophyIcon } from "lucide-react";
 import Link from "next/link";
@@ -15,7 +15,7 @@ export default function Activity({
   title?: string;
   showUserAddress?: boolean;
 }) {
-  const chain = useCurrentChain();
+  const chain = getChain(ChainName.MATCHAIN);
   function getIcon(reward: Reward) {
     if (reward.badgeTokens.length > 0) {
       return <TrophyIcon />;
