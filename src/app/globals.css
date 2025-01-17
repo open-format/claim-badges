@@ -86,7 +86,122 @@ body {
   }
 }
 
-#privy-dialog-backdrop {
-  backdrop-filter: none;
-  filter: none;
+.matchid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: rgba(0, 0, 0, 0.8);
+
+  /* Animation classes similar to Radix UI Dialog */
+  &[data-state="open"] {
+    animation: fadeIn 150ms ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: fadeOut 150ms ease-in;
+  }
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  backdrop-filter: blur(2px);
+
+  @media screen and (max-width: 768px) {
+    align-items: flex-end;
+    padding-bottom: 32px;
+  }
+}
+
+.matchid-modal {
+  z-index: 999999;
+  @apply grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg rounded-lg;
+
+  /* Animation classes similar to Radix UI Dialog */
+  &[data-state="open"] {
+    animation: zoomIn 150ms ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: zoomOut 150ms ease-in;
+  }
+}
+
+.matchid-modal-header {
+  @apply flex flex-col space-y-1.5 text-center sm:text-left border-b pb-4 mb-4;
+}
+
+.matchid-modal-header-title {
+  @apply text-lg font-semibold leading-none tracking-tight;
+}
+
+.matchid-modal-header-content {
+  @apply text-sm text-muted-foreground;
+}
+
+.matchid-password-header {
+  @apply flex items-center space-x-4 mb-4;
+}
+
+.matchid-password-header-content {
+  @apply text-sm text-muted-foreground;
+}
+
+.matchid-field-box {
+  @apply space-y-2 mb-4;
+}
+
+.matchid-field-label {
+  @apply text-sm font-medium;
+}
+
+.matchid-input-box {
+  @apply flex space-x-2 items-center;
+}
+
+.matchid-input-field {
+  @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.matchid-btn {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+}
+
+.matchid-btn-lg {
+  @apply h-10 px-4 py-2;
+}
+
+.matchid-btn-highlight {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.matchid-btn-block {
+  @apply w-full;
+}
+
+.matchid-btn-rounded {
+  @apply rounded-lg;
+}
+
+/* Keyframe animations */
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
 }
