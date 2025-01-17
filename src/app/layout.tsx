@@ -11,9 +11,8 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const slug = (await params).slug;
-  const community = await fetchCommunity(slug);
+export async function generateMetadata(): Promise<Metadata> {
+  const community = await fetchCommunity(process.env.NEXT_PUBLIC_COMMUNITY_ID);
 
   // Use VERCEL_URL in production, fallback to localhost in development
   const baseUrl = process.env.VERCEL_URL
