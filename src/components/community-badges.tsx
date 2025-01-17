@@ -7,7 +7,7 @@ import { claimBadge } from "@/lib/openformat";
 import { getMetadata } from "@/lib/thirdweb";
 import { usePrivy } from "@privy-io/react-auth";
 import dayjs from "dayjs";
-import { HelpCircle, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { startTransition, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -101,27 +101,28 @@ function Item({
 
   function handleClaim() {
     setIsClaiming(true);
-    startTransition(() => {
-      const claimBadgeAsync = async () => {
-        await claimBadge(badge.id as Address, metadata?.name as string, user?.wallet?.address as Address, metadataURI);
-      };
-      toast.promise(
-        claimBadgeAsync()
-          .then(() => {
-            triggerConfetti();
-          })
-          .catch((error) => {
-            console.error("Error claiming badge:", error);
-            toast.error("Error claiming badge");
-          }),
-        {
-          loading: "Claiming badge...",
-          success: "Badge claimed!",
-          error: "Error claiming badge",
-        }
-      );
+    startTransition(async () => {
+      try {
+        const response = await claimBadge(
+          badge.id as Address,
+          metadata?.name as string,
+          user?.wallet?.address as Address,
+          metadataURI
+        );
 
-      setShouldRevalidate(true);
+        if (!response.success) {
+          throw new Error(response.error || "An unknown error occurred while claiming the badge.");
+        }
+
+        triggerConfetti();
+        toast.success("Badge claimed successfully!");
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        toast.error(errorMessage);
+      } finally {
+        setIsClaiming(false);
+        setShouldRevalidate(true);
+      }
     });
   }
 

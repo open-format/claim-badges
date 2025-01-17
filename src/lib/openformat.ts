@@ -2,6 +2,7 @@
 
 import { rewardFacetAbi } from "@/abis/RewardFacet";
 import { type Chain, ChainName, getChain, getChainById } from "@/constants/chains";
+import { CLAIM_CONDITIONS } from "@/constants/claim-conditions";
 import config from "@/constants/config";
 import { getCommunities, getCommunity } from "@/db/queries/communities";
 import axios from "axios";
@@ -359,32 +360,6 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
   }
 }
 
-export async function fundAccount() {
-  const currentUser = await getCurrentUser();
-  // @TODO: Handle multiple chains, check wallet balance, etc.
-  if (!config.ACCOUNT_BALANCE_SERVICE_URL || !config.ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN) {
-    return null;
-  }
-
-  const data = {
-    user_address: currentUser?.wallet_address,
-    amount: config.ACCOUNT_BALANCE_AMOUNT,
-  };
-
-  try {
-    const response = await axios.post(`${config.ACCOUNT_BALANCE_SERVICE_URL}`, data, {
-      headers: {
-        Authorization: `Bearer ${config.ACCOUNT_BALANCE_SERVICE_AUTH_TOKEN}`,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
 async function getNonce(address: string, retryCount = 0): Promise<number> {
   // @DEV: fetches the latest nonce and increments it atomically
   try {
@@ -418,54 +393,94 @@ async function getNonce(address: string, retryCount = 0): Promise<number> {
 }
 
 export async function claimBadge(badgeId: Address, badgeName: string, user: Address, ipfsHash: string) {
-  // @TODO: Check if user already owns the badge
-  // @TODO: Correct error handling
-  // @TODO: Redis queue for the nonce
-  const { request } = await publicClient.simulateContract({
-    account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
-    address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
-    abi: rewardFacetAbi,
-    functionName: "mintBadge",
-    args: [
-      badgeId as Address,
-      user as Address,
-      stringToHex(`Claimed ${badgeName}`, { size: 32 }),
-      stringToHex("MISSION", { size: 32 }),
-      stringToHex(ipfsHash),
-    ],
-  });
+  try {
+    // Fetch user's collected badges
+    const userProfile = await fetchUserProfile(process.env.NEXT_PUBLIC_COMMUNITY_ID as string);
+    const userBadges = userProfile?.badges || [];
 
-  const nonce = await getNonce(walletClient.account.address);
+    if (!userProfile || !userBadges) {
+      return { success: false, error: "Badges not found." };
+    }
 
-  await walletClient.writeContract({
-    ...request,
-    nonce,
-  });
+    // Find the badge and its claim condition
+    const badge = userBadges.find((b) => b.id === badgeId);
+    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badgeId);
 
-  const { request: pointsRequest } = await publicClient.simulateContract({
-    account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
-    address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
-    abi: rewardFacetAbi,
-    functionName: "mintERC20",
-    args: [
-      process.env.POINTS_TOKEN_ADDRESS as Address,
-      user as Address,
-      // @TODO: Work out amounts
-      parseEther("100"),
-      stringToHex("Earned PSG Points", { size: 32 }),
-      stringToHex("MISSION", { size: 32 }),
-      ipfsHash,
-    ],
-  });
+    if (!condition) {
+      return { success: false, error: "Badge is not claimable due to missing conditions." };
+    }
 
-  const pointsNonce = await getNonce(walletClient.account.address);
+    const now = new Date();
+    const ownsRequiredBadge = condition.mustOwnBadge
+      ? userBadges.some((b) => b.id === condition.mustOwnBadge && b.isCollected)
+      : true;
 
-  await walletClient.writeContract({
-    ...pointsRequest,
-    nonce: pointsNonce,
-  });
+    const withinDateRange =
+      condition.claimableFrom && condition.claimableTo
+        ? condition.claimableFrom <= now && now <= condition.claimableTo
+        : true;
 
-  revalidate();
+    if (!ownsRequiredBadge) {
+      return { success: false, error: "You must own the required badge before claiming this badge." };
+    }
 
-  return true;
+    if (!withinDateRange) {
+      return { success: false, error: "This badge is not claimable at this time." };
+    }
+
+    if (badge?.isCollected) {
+      return { success: false, error: "Badge has already been claimed." };
+    }
+
+    // Proceed with claiming the badge
+    const { request } = await publicClient.simulateContract({
+      account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
+      address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
+      abi: rewardFacetAbi,
+      functionName: "mintBadge",
+      args: [
+        badgeId as Address,
+        user as Address,
+        stringToHex(`Claimed ${badgeName}`, { size: 32 }),
+        stringToHex("MISSION", { size: 32 }),
+        stringToHex(ipfsHash),
+      ],
+    });
+
+    const nonce = await getNonce(walletClient.account.address);
+
+    await walletClient.writeContract({
+      ...request,
+      nonce,
+    });
+
+    // Mint points as well
+    const { request: pointsRequest } = await publicClient.simulateContract({
+      account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
+      address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
+      abi: rewardFacetAbi,
+      functionName: "mintERC20",
+      args: [
+        process.env.POINTS_TOKEN_ADDRESS as Address,
+        user as Address,
+        parseEther("100"),
+        stringToHex("Earned PSG Points", { size: 32 }),
+        stringToHex("MISSION", { size: 32 }),
+        ipfsHash,
+      ],
+    });
+
+    const pointsNonce = await getNonce(walletClient.account.address);
+
+    await walletClient.writeContract({
+      ...pointsRequest,
+      nonce: pointsNonce,
+    });
+
+    revalidate();
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 }

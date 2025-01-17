@@ -11,7 +11,6 @@ export function useRevalidate(shouldRevalidate: boolean, interval = 2500, maxCou
     const intervalId = setInterval(() => {
       if (revalidateCount < maxCount) {
         revalidate();
-        console.log("Revalidating...");
         revalidateCount++;
       } else {
         clearInterval(intervalId);
