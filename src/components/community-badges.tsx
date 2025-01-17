@@ -100,7 +100,15 @@ function Item({
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  useRevalidate(shouldRevalidate);
+  const { hasComplete } = useRevalidate(shouldRevalidate, 2000, 3);
+
+  useEffect(() => {
+    if (hasComplete) {
+      setIsClaiming(false);
+      triggerConfetti();
+      toast.success("Badge claimed successfully!");
+    }
+  }, [hasComplete]);
 
   function handleClaim() {
     setIsClaiming(true);
@@ -116,14 +124,10 @@ function Item({
         if (!response.success) {
           throw new Error(response.error || "An unknown error occurred while claiming the badge.");
         }
-
-        triggerConfetti();
-        toast.success("Badge claimed successfully!");
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
         toast.error(errorMessage);
       } finally {
-        setIsClaiming(false);
         setShouldRevalidate(true);
       }
     });
