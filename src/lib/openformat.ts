@@ -219,7 +219,7 @@ export async function fetchUserProfile(slug: string) {
   const cookieStore = await cookies();
   const currentUserAddress = cookieStore.get("address");
   const community = await getCommunity(slug);
-  const chain = await getChainFromCommunityOrCookie();
+  const chain = getChain(ChainName.MATCHAIN);
 
   if (!currentUserAddress || !community || !chain) {
     return null;

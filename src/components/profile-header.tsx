@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar } from "@/components/ui/avatar";
+import { ChainName } from "@/constants/chains";
 import LoginModalDialog from "@/dialogs/login-modal-dialog";
 import { addressSplitter } from "@/lib/utils";
 import { Hooks } from "@matchain/matchid-sdk-react";
@@ -30,6 +31,7 @@ export default function Profile() {
   useEffect(() => {
     if (address) {
       Cookies.set("address", address);
+      Cookies.set("chainName", ChainName.MATCHAIN);
     } else {
       Cookies.remove("address");
     }
