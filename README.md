@@ -36,6 +36,10 @@ All environment variables are required for the application to function properly:
 | `THIRDWEB_SECRET`             | Secret key for Thirdweb server-side operations                                   | [Thirdweb Dashboard](https://thirdweb.com/dashboard)                                            |
 | `OPENFORMAT_API_KEY`          | API key for Open Format leaderboard generation                                   | [Open Format Dashboard](https://app.openformat.tech)                                            |
 | `OPENFORMAT_API_URL`          | Base URL for Open Format API endpoints (default: https://api.openformat.tech/v1) | [Open Format Docs](https://docs.openformat.tech)                                                |
+| `NEXT_PUBLIC_COMMUNITY_ID`    | Community ID for Matchain integration                                            | [Matchain Docs](https://matchain.example.com)                                                   |
+| `POINTS_TOKEN_ADDRESS`        | Token address for points system                                                  | [Matchain Docs](https://matchain.example.com)                                                   |
+| `PRIVATE_KEY`                 | Private key for secure operations                                                | [Security Docs](https://security.example.com)                                                   |
+| `KV_URL`                      | URL for key-value storage service                                                | [KV Service Docs](https://kv.example.com)                                                       |
 
 ### Deploy
 
@@ -55,20 +59,7 @@ Instantly deploy your own copy of the template using Vercel or Netlify:
 2. Install dependencies:
 
    ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
-   # or
    bun install
-   ```
-
-   the postinstall script will run the following commands:
-
-   ```bash
-   npm run db:generate // generate the schema
-   npm run db:migrate // migrate the schema
    ```
 
 3. Copy the `.env.example` file to `.env` and fill in the missing values:
@@ -80,11 +71,7 @@ Instantly deploy your own copy of the template using Vercel or Netlify:
 4. Start the development server:
 
    ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
+   bun run dev
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
