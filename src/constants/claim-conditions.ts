@@ -1,5 +1,5 @@
 /**
- * Represents a condition under which a badge can be claimed.
+ * Represents a condition under which a badge can be claimed
  *
  * @typedef {Object} ClaimCondition
  * @property {string} badgeId - The unique identifier of the badge that can be claimed.
