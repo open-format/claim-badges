@@ -11,12 +11,14 @@ import dayjs from "dayjs";
 import { HelpCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { startTransition, useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
 import { toast } from "sonner";
 import type { Address } from "viem";
 import RefreshButton from "./refresh-button";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
@@ -147,6 +149,38 @@ function Item({
     fetchMetadata();
   }, [metadataURI]);
 
+  const renderTooltipOrPopover = (children: React.ReactNode) => {
+    if (isMobile) {
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <div>{children}</div>
+          </PopoverTrigger>
+          {claimStatus.startsWith(ClaimStatus.NotClaimableReason) && (
+            <PopoverContent className="text-xs" side="top">
+              {claimStatus.replace(ClaimStatus.NotClaimableReason, "")}
+            </PopoverContent>
+          )}
+        </Popover>
+      );
+    }
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div>{children}</div>
+          </TooltipTrigger>
+          {claimStatus.startsWith(ClaimStatus.NotClaimableReason) && (
+            <TooltipContent side="top" className="text-xs">
+              {claimStatus.replace(ClaimStatus.NotClaimableReason, "")}
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   return (
     <Card className="flex flex-col justify-between">
       <CardContent className="flex items-center justify-center p-4">
@@ -176,32 +210,23 @@ function Item({
           </LoginModalDialog>
         ) : (
           <div className="flex flex-col gap-2 w-full">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Button
-                      className="w-full"
-                      onClick={handleClaim}
-                      disabled={isClaiming || badge.isCollected || claimStatus !== ClaimStatus.Claimable}
-                    >
-                      {badge.isCollected
-                        ? "Claimed"
-                        : isClaiming
-                        ? "Claiming..."
-                        : claimStatus === ClaimStatus.Claimable
-                        ? "Claim"
-                        : "Not Claimable"}
-                      {isClaiming && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                      {claimStatus.startsWith(ClaimStatus.NotClaimableReason) && <HelpCircle className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                {claimStatus.startsWith(ClaimStatus.NotClaimableReason) && (
-                  <TooltipContent>{claimStatus.replace(ClaimStatus.NotClaimableReason, "")}</TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+            {renderTooltipOrPopover(
+              <Button
+                className="w-full"
+                onClick={handleClaim}
+                disabled={isClaiming || badge.isCollected || claimStatus !== ClaimStatus.Claimable}
+              >
+                {badge.isCollected
+                  ? "Claimed"
+                  : isClaiming
+                  ? "Claiming..."
+                  : claimStatus === ClaimStatus.Claimable
+                  ? "Claim"
+                  : "Not Claimable"}
+                {isClaiming && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                {claimStatus.startsWith(ClaimStatus.NotClaimableReason) && <HelpCircle className="ml-2 h-4 w-4" />}
+              </Button>
+            )}
           </div>
         )}
       </CardFooter>
