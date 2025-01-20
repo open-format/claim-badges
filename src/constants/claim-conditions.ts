@@ -28,11 +28,11 @@ export enum ClaimStatus {
  */
 export const CLAIM_CONDITIONS: ClaimCondition[] = [
   {
-    badgeId: "0xde9b7c0c1709b612c3fbb4ba9ee380e4e7c12a01",
+    badgeId: "0x3E9af5C6AE7f7936C629dE669A0e3295F3266FB0",
   },
   {
-    badgeId: "0x12910c45293a224e8cbb9b5dc7927b28c7429091",
-    mustOwnBadge: "0xde9b7c0c1709b612c3fbb4ba9ee380e4e7c12a01",
+    badgeId: "0x83930cF99c3292f2f4045Cc0727FD43783c1aC02",
+    mustOwnBadge: "0x3E9af5C6AE7f7936C629dE669A0e3295F3266FB0",
     claimableFrom: new Date("2025-01-22T00:00:00Z"),
     claimableTo: new Date("2025-01-22T23:59:59Z"),
   },
