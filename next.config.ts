@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
     //@DEV Don't be lazy. sort your linting pal
     ignoreDuringBuilds: true,
   },
+  serverActions: {
+    allowedOrigins: ['psgclubrewards.matchain.io', 'matchain.openformat.tech', 'matchain-badge-claiming.vercel.app'],
+  },
 };
 
 export default nextConfig;
