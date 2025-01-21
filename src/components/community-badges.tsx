@@ -5,7 +5,6 @@ import { useConfetti } from "@/contexts/confetti-context";
 import LoginModalDialog from "@/dialogs/login-modal-dialog";
 import { useRevalidate } from "@/hooks/useRevalidate";
 import { claimBadge } from "@/lib/openformat";
-import { getMetadata } from "@/lib/thirdweb";
 import { Hooks } from "@matchain/matchid-sdk-react";
 import dayjs from "dayjs";
 import { HelpCircle, Loader2 } from "lucide-react";
@@ -24,11 +23,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 const { useUserInfo } = Hooks;
 
-const HARDCODED_METADATA_URIS = [
-  "https://uqjehhscpszypwnzrbcx.supabase.co/storage/v1/object/public/matchain/badge1.json",
-  "https://uqjehhscpszypwnzrbcx.supabase.co/storage/v1/object/public/matchain/badge2.json",
+const HARDCODED_METADATA = [
+  {
+    name: "Bienvenue à Paris",
+    description:
+      "This badge marks the beginning of your official journey with the Matchain x PSG family. Claim it to win tickets to next game and shirts.",
+    image: "https://dxxqtmovifaszidnktqp.supabase.co/storage/v1/object/public/matchain/photo_2025-01-20_19-09-27.jpg",
+  },
+  {
+    name: "Game badge: 22/01",
+    description: "Collect this badge to celebrate the game on 22nd of January!",
+    image:
+      "https://dxxqtmovifaszidnktqp.supabase.co/storage/v1/object/public/matchain/photo_2025-01-20_19-09-27%20(2).jpg",
+  },
 ];
-
 export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollectedStatus[] | undefined }) {
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
     const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
@@ -86,7 +94,7 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
           <Item
             key={badge.id}
             badge={badge}
-            metadataURI={HARDCODED_METADATA_URIS[index]}
+            metadataURI={HARDCODED_METADATA[index]}
             claimStatus={checkClaimStatus(badge)}
           />
         ))}
@@ -148,9 +156,8 @@ function Item({
   useEffect(() => {
     async function fetchMetadata() {
       try {
-        const response = await getMetadata(metadataURI);
-        setMetadata(response);
-        setImage(response.image);
+        setMetadata(metadataURI);
+        setImage(metadataURI.image);
       } catch (error) {
         console.error("Error fetching metadata:", error);
       }
