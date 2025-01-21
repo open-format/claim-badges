@@ -24,10 +24,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 const { useUserInfo } = Hooks;
 
-const HARDCODED_METADATA_URIS: { [key: string]: string } = {
-  "1": "https://ipfs.io/ipfs/QmTYxoFjDxrJuqCvAGRQNhP6mdAhvKoUGrTZxzwsJ5heS1",
-  "2": "https://ipfs.io/ipfs/QmdZ2g3cTssPqXMrMMrwZKpHLb7eZdGMRtWmtvWptBEmgM"
-};
+const HARDCODED_METADATA_URIS = [
+  "https://uqjehhscpszypwnzrbcx.supabase.co/storage/v1/object/public/matchain/badge1.json",
+  "https://uqjehhscpszypwnzrbcx.supabase.co/storage/v1/object/public/matchain/badge2.json",
+];
 
 export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollectedStatus[] | undefined }) {
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
@@ -82,13 +82,13 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
         <CardDescription>Badges available to collect in this community</CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        {badges.map((badge) => (
-          <Item 
-          key={badge.id} 
-          badge={badge} 
-          metadataURI={HARDCODED_METADATA_URIS[badge.id as keyof typeof HARDCODED_METADATA_URIS] || badge.metadataURI} 
-          claimStatus={checkClaimStatus(badge)} 
-        />
+        {badges.map((badge, index) => (
+          <Item
+            key={badge.id}
+            badge={badge}
+            metadataURI={HARDCODED_METADATA_URIS[index]}
+            claimStatus={checkClaimStatus(badge)}
+          />
         ))}
       </CardContent>
     </Card>
