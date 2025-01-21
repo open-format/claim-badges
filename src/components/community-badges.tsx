@@ -24,6 +24,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 const { useUserInfo } = Hooks;
 
+const HARDCODED_METADATA_URIS: { [key: string]: string } = {
+  "1": "https://ipfs.io/ipfs/QmTYxoFjDxrJuqCvAGRQNhP6mdAhvKoUGrTZxzwsJ5heS1",
+  "2": "https://ipfs.io/ipfs/QmdZ2g3cTssPqXMrMMrwZKpHLb7eZdGMRtWmtvWptBEmgM"
+};
+
 export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollectedStatus[] | undefined }) {
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
     const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
@@ -78,7 +83,12 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {badges.map((badge) => (
-          <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} claimStatus={checkClaimStatus(badge)} />
+          <Item 
+          key={badge.id} 
+          badge={badge} 
+          metadataURI={HARDCODED_METADATA_URIS[badge.id as keyof typeof HARDCODED_METADATA_URIS] || badge.metadataURI} 
+          claimStatus={checkClaimStatus(badge)} 
+        />
         ))}
       </CardContent>
     </Card>
