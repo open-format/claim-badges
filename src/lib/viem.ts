@@ -1,4 +1,4 @@
-"use server";
+"user server";
 
 import { createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
