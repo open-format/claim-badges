@@ -482,6 +482,7 @@ export async function claimBadge(badgeId: Address, badgeName: string, user: Addr
 
     return { success: true };
   } catch (error) {
+    console.error({ error });
     return { success: false, error: error.message };
   }
 }
