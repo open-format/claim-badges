@@ -105,6 +105,10 @@ function Item({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useRevalidate(shouldRevalidate, 2000, 3);
 
+  useEffect(() => {
+    setLocalBadge(badge);
+  }, [address]);
+
   function handleClaim() {
     setIsClaiming(true);
     startTransition(async () => {
