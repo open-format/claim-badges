@@ -1,5 +1,6 @@
 "use client";
 
+import { useBadgeContext } from "@/components/providers/badge-provider";
 import { CLAIM_CONDITIONS, ClaimStatus } from "@/constants/claim-conditions";
 import { useConfetti } from "@/contexts/confetti-context";
 import LoginModalDialog from "@/dialogs/login-modal-dialog";
@@ -46,7 +47,9 @@ const sortBadges = (badges: BadgeWithCollectedStatus[]): BadgeWithCollectedStatu
   });
 };
 
-export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollectedStatus[] | undefined }) {
+export default function CommunityBadges() {
+  const { badges } = useBadgeContext();
+
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
     const hide = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id)?.hide && !badge.isCollected;
     if (hide) return ClaimStatus.Hidden;
@@ -85,6 +88,8 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
     return badge.isCollected ? ClaimStatus.Claimed : ClaimStatus.Claimable;
   };
 
+  const sortedBadges = sortBadges(badges.filter((badge) => !checkClaimStatus(badge).startsWith(ClaimStatus.Hidden)));
+
   if (!badges || !badges.length) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -92,8 +97,6 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
       </div>
     );
   }
-
-  const sortedBadges = sortBadges(badges.filter((badge) => !checkClaimStatus(badge).startsWith(ClaimStatus.Hidden)));
 
   return (
     <Card variant="borderless">
@@ -122,6 +125,7 @@ function Item({
   metadataURI: string;
   claimStatus: string;
 }) {
+  const { setBadges } = useBadgeContext();
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [isClaiming, setIsClaiming] = useState<boolean>(false);
@@ -132,10 +136,6 @@ function Item({
   const [shouldRevalidate, setShouldRevalidate] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useRevalidate(shouldRevalidate, 2000, 3);
-
-  useEffect(() => {
-    setLocalBadge(badge);
-  }, [address]);
 
   function handleClaim() {
     setIsClaiming(true);
@@ -157,6 +157,8 @@ function Item({
         setIsClaiming(false);
         triggerConfetti();
         toast.success("Badge claimed successfully!");
+
+        setBadges((currentBadges) => currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: true } : b)));
       } catch (error) {
         setIsClaiming(false);
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
