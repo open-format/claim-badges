@@ -130,6 +130,7 @@ function Item({
         triggerConfetti();
         toast.success("Badge claimed successfully!");
       } catch (error) {
+        setIsClaiming(false);
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
         toast.error(errorMessage);
         setLocalBadge(badge);
