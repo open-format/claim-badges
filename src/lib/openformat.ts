@@ -362,7 +362,6 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
 }
 
 async function getNonce(address: string, retryCount = 0): Promise<number> {
-  // @DEV: fetches the latest nonce and increments it atomically
   try {
     const currentNonce = await publicClient.getTransactionCount({ address: address as Address });
     console.log("Current nonce:", currentNonce);
@@ -391,6 +390,31 @@ async function getNonce(address: string, retryCount = 0): Promise<number> {
     await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** retryCount));
     return getNonce(address, retryCount + 1);
   }
+}
+
+async function sendTransactionWithRetry(
+  sendTransaction: (nonce: number) => Promise<void>,
+  maxRetries = 5
+): Promise<void> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const address = walletClient.account.address;
+      const nonce = await getNonce(address);
+
+      await sendTransaction(nonce);
+      return; // Success, exit the function
+    } catch (error) {
+      lastError = error;
+      console.error(`Transaction attempt ${attempt + 1} failed:`, error);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+
+  // If we've exhausted all retries
+  throw new Error("Failed to claim badge. Please try again later.");
 }
 
 export async function claimBadge(badgeId: Address, badgeName: string, user: Address, ipfsHash: string) {
@@ -434,48 +458,48 @@ export async function claimBadge(badgeId: Address, badgeName: string, user: Addr
     }
 
     // Proceed with claiming the badge
-    const { request } = await publicClient.simulateContract({
-      account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
-      address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
-      abi: rewardFacetAbi,
-      functionName: "mintBadge",
-      args: [
-        badgeId as Address,
-        user as Address,
-        stringToHex(`Claimed ${badgeName}`, { size: 32 }),
-        stringToHex("MISSION", { size: 32 }),
-        stringToHex(ipfsHash),
-      ],
+    await sendTransactionWithRetry(async (nonce) => {
+      const { request } = await publicClient.simulateContract({
+        account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
+        address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
+        abi: rewardFacetAbi,
+        functionName: "mintBadge",
+        args: [
+          badgeId as Address,
+          user as Address,
+          stringToHex(`Claimed ${badgeName}`, { size: 32 }),
+          stringToHex("MISSION", { size: 32 }),
+          stringToHex(ipfsHash),
+        ],
+      });
+
+      await walletClient.writeContract({
+        ...request,
+        nonce,
+      });
     });
 
-    const nonce = await getNonce(walletClient.account.address);
+    // Repeat for points minting
+    await sendTransactionWithRetry(async (nonce) => {
+      const { request: pointsRequest } = await publicClient.simulateContract({
+        account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
+        address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
+        abi: rewardFacetAbi,
+        functionName: "mintERC20",
+        args: [
+          process.env.POINTS_TOKEN_ADDRESS as Address,
+          user as Address,
+          parseEther("100"),
+          stringToHex("Earned PSG Points", { size: 32 }),
+          stringToHex("MISSION", { size: 32 }),
+          ipfsHash,
+        ],
+      });
 
-    await walletClient.writeContract({
-      ...request,
-      nonce,
-    });
-
-    // Mint points as well
-    const { request: pointsRequest } = await publicClient.simulateContract({
-      account: privateKeyToAccount(process.env.PRIVATE_KEY as Address),
-      address: process.env.NEXT_PUBLIC_COMMUNITY_ID as Address,
-      abi: rewardFacetAbi,
-      functionName: "mintERC20",
-      args: [
-        process.env.POINTS_TOKEN_ADDRESS as Address,
-        user as Address,
-        parseEther("100"),
-        stringToHex("Earned PSG Points", { size: 32 }),
-        stringToHex("MISSION", { size: 32 }),
-        ipfsHash,
-      ],
-    });
-
-    const pointsNonce = await getNonce(walletClient.account.address);
-
-    await walletClient.writeContract({
-      ...pointsRequest,
-      nonce: pointsNonce,
+      await walletClient.writeContract({
+        ...pointsRequest,
+        nonce,
+      });
     });
 
     revalidate();
