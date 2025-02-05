@@ -6,7 +6,7 @@ import { revalidate } from "@/lib/openformat";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Hooks } from "@matchain/matchid-sdk-react";
 import { Loader2 } from "lucide-react";
-import { startTransition, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../components/ui/button";
@@ -63,22 +63,29 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
     }
   };
 
-  const handleLogin = async (data: z.infer<typeof codeSchema>) => {
+  function handleLogin(data: z.infer<typeof codeSchema>) {
     const email = emailForm.getValues("email");
     try {
-      startTransition(async () => {
-        await loginByEmail({ email, code: data.code });
-        setIsOpen(false);
-        revalidate();
-      });
+      loginByEmail({ email, code: data.code })
+        .then(() => {
+          setIsOpen(false);
+          revalidate();
+        })
+        .catch((error) => {
+          console.error("Login failed", error);
+          codeForm.setError("code", {
+            type: "manual",
+            message: error instanceof Error ? error.message : "Login failed. Please try again.",
+          });
+        });
     } catch (error) {
       console.error("Login failed", error);
       codeForm.setError("code", {
         type: "manual",
-        message: "Login failed. Please try again.",
+        message: error instanceof Error ? error.message : "Login failed. Please try again.",
       });
     }
-  };
+  }
 
   function toggle() {
     setIsOpen((t) => !t);
@@ -91,7 +98,11 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>{address ? "User Profile" : "Login"}</DialogTitle>
         </DialogHeader>
