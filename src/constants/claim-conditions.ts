@@ -78,8 +78,15 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
   {
     badgeId: "0xfa19bb26a14ae467d586bc93d46fb76ba76c7a8f",
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
-    claimableFrom: new Date("2025-02-08T00:00:00Z"),
-    claimableTo: new Date("2025-02-08T23:59:59Z"),
+    claimableFrom: new Date("2025-02-03T00:00:00Z"),
+    claimableTo: new Date("2025-02-03T23:59:59Z"),
     hide: true,
+  },
+  {
+    badgeId: "0xe6b24f681911e3f174c131c3d9b36319e146af24",
+    mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
+    claimableFrom: new Date("2025-02-05T00:00:00Z"),
+    claimableTo: new Date("2025-02-07T23:59:59Z"),
+    hide: false,
   },
 ];
