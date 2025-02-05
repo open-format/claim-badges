@@ -12,6 +12,7 @@ type ClaimCondition = {
   mustOwnBadge?: string;
   claimableFrom?: Date;
   claimableTo?: Date;
+  hide?: boolean;
 };
 
 export enum ClaimStatus {
@@ -19,6 +20,7 @@ export enum ClaimStatus {
   Claimed = "Claimed",
   NotClaimable = "Not Claimable",
   NotClaimableReason = "Not Claimable: ",
+  Hidden = "Hidden",
 }
 
 /**
@@ -29,47 +31,55 @@ export enum ClaimStatus {
 export const CLAIM_CONDITIONS: ClaimCondition[] = [
   {
     badgeId: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
+    hide: false,
   },
   {
     badgeId: "0x83930cf99c3292f2f4045cc0727fd43783c1ac02",
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-01-22T00:00:00Z"),
     claimableTo: new Date("2025-01-22T23:59:59Z"),
+    hide: true,
   },
   {
     badgeId: "0x16b86b74291dc2e81f2012be803c24bef012474c",
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-01-25T00:00:00Z"),
     claimableTo: new Date("2025-01-25T23:59:59Z"),
+    hide: true,
   },
   {
     badgeId: "0x5967e3626cb1a09816af0886ce584c72d717f5f8",
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-01-29T00:00:00Z"),
     claimableTo: new Date("2025-01-29T23:59:59Z"),
+    hide: true,
   },
   {
     badgeId: "0x716ad1b6222046289c1664825cd9e4caf6253aec",
     // mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-01-29T00:00:00Z"),
     claimableTo: new Date("2025-02-12T23:59:59Z"),
+    hide: false,
   },
   {
     badgeId: "0x19a1e12bd12f2aa6a282d80118f2dcfe2288fd6b",
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-02-01T00:00:00Z"),
     claimableTo: new Date("2025-02-01T23:59:59Z"),
+    hide: true,
   },
   {
     badgeId: "0xc7529593f368393bd67d9a8671519716c36426f0",
     // mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-02-04T00:00:00Z"),
     claimableTo: new Date("2025-02-04T23:59:59Z"),
+    hide: true,
   },
   {
     badgeId: "0xfa19bb26a14ae467d586bc93d46fb76ba76c7a8f",
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-02-08T00:00:00Z"),
     claimableTo: new Date("2025-02-08T23:59:59Z"),
+    hide: true,
   },
 ];

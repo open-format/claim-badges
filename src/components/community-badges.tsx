@@ -24,8 +24,33 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 const { useUserInfo } = Hooks;
 
+const sortBadges = (badges: BadgeWithCollectedStatus[]): BadgeWithCollectedStatus[] => {
+  const BADGE_PRIORITY_ORDER = process.env.NEXT_PUBLIC_BADGE_ORDER?.split(",") || [];
+
+  return [...badges].sort((a, b) => {
+    // if (a.isCollected !== b.isCollected) {
+    //   return a.isCollected ? 1 : -1;
+    // }
+
+    const indexA = BADGE_PRIORITY_ORDER.indexOf(a.id);
+    const indexB = BADGE_PRIORITY_ORDER.indexOf(b.id);
+
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    }
+
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+
+    return (a.name || "").localeCompare(b.name || "");
+  });
+};
+
 export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollectedStatus[] | undefined }) {
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
+    const hide = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id)?.hide && !badge.isCollected;
+    if (hide) return ClaimStatus.Hidden;
+
     const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
     if (!condition) return ClaimStatus.Claimable;
 
@@ -67,6 +92,9 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
       </div>
     );
   }
+
+  const sortedBadges = sortBadges(badges.filter((badge) => !checkClaimStatus(badge).startsWith(ClaimStatus.Hidden)));
+
   return (
     <Card variant="borderless">
       <CardHeader>
@@ -77,7 +105,7 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
         <CardDescription>Badges available to collect in this community.</CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        {badges.map((badge) => (
+        {sortedBadges.map((badge) => (
           <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} claimStatus={checkClaimStatus(badge)} />
         ))}
       </CardContent>
