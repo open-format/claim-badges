@@ -1,8 +1,8 @@
 "user server";
 
+import { matchain } from "@/constants/chains";
 import { createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { matchain } from "viem/chains";
 
 export const publicClient = createPublicClient({
   chain: matchain,

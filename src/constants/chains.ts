@@ -1,5 +1,5 @@
 import type { Address } from "viem";
-import { type Chain as ViemChain, arbitrumSepolia, aurora, base, matchain } from "viem/chains";
+import { type Chain as ViemChain, arbitrumSepolia, aurora, base } from "viem/chains";
 
 export const turboChain: ViemChain = {
   id: 1313161567,
@@ -18,6 +18,27 @@ export const turboChain: ViemChain = {
     default: {
       name: "TurboChain Explorer",
       url: "https://explorer.turbo.aurora.dev",
+    },
+  },
+};
+
+export const matchain: ViemChain = {
+  id: 698,
+  name: "Matchain",
+  nativeCurrency: {
+    name: "BNB",
+    symbol: "BNB",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.ankr.com/matchain_mainnet/a34935226447b30cb9f35c3bcc942d0ad503a3b8f5df4b5096faf1c18320fc33"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Matchain Scan",
+      url: "https://matchscan.io",
     },
   },
 };

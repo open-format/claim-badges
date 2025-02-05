@@ -74,7 +74,7 @@ export default function ProfileBadgeGrid({ badges }: { badges: BadgeWithCollecte
           <h1>Badges</h1>
           <RefreshButton />
         </CardTitle>
-        <CardDescription>Badges available to collect in this community</CardDescription>
+        <CardDescription>Badges available to collect in this community.</CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {badges.map((badge) => (
@@ -97,20 +97,17 @@ function Item({
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [isClaiming, setIsClaiming] = useState<boolean>(false);
+  const [localBadge, setLocalBadge] = useState<BadgeWithCollectedStatus>(badge);
 
   const { address } = useUserInfo();
   const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { hasComplete } = useRevalidate(shouldRevalidate, 2000, 3);
+  useRevalidate(shouldRevalidate, 2000, 3);
 
   useEffect(() => {
-    if (hasComplete) {
-      setIsClaiming(false);
-      triggerConfetti();
-      toast.success("Badge claimed successfully!");
-    }
-  }, [hasComplete]);
+    setLocalBadge(badge);
+  }, [address]);
 
   function handleClaim() {
     setIsClaiming(true);
@@ -124,11 +121,19 @@ function Item({
         );
 
         if (!response.success) {
+          setLocalBadge(badge);
           throw new Error(response.error || "An unknown error occurred while claiming the badge.");
         }
+
+        setLocalBadge((prev) => ({ ...prev, isCollected: true }));
+        setIsClaiming(false);
+        triggerConfetti();
+        toast.success("Badge claimed successfully!");
       } catch (error) {
+        setIsClaiming(false);
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
         toast.error(errorMessage);
+        setLocalBadge(badge);
       } finally {
         setShouldRevalidate(true);
       }
@@ -214,9 +219,9 @@ function Item({
               <Button
                 className="w-full"
                 onClick={handleClaim}
-                disabled={isClaiming || badge.isCollected || claimStatus !== ClaimStatus.Claimable}
+                disabled={isClaiming || localBadge.isCollected || claimStatus !== ClaimStatus.Claimable}
               >
-                {badge.isCollected
+                {localBadge.isCollected
                   ? "Claimed"
                   : isClaiming
                   ? "Claiming..."
