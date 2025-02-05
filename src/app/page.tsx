@@ -6,6 +6,7 @@ import { CommunityBanner } from "@/components/community-banner";
 import CommunityInfo from "@/components/community-info";
 import CommunityProfile from "@/components/community-profile";
 import Leaderboard from "@/components/leaderboard";
+import { BadgeProvider } from "@/components/providers/badge-provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchCommunity, fetchUserProfile } from "@/lib/openformat";
 import { cn } from "@/lib/utils";
@@ -47,32 +48,34 @@ export default async function CommunityPage() {
       {/* Community Info */}
       <CommunityInfo title={community?.metadata?.title} description={community?.metadata?.description} />
 
-      <Tabs defaultValue="badges" className="w-full">
-        <TabsList className="w-full">
-          <TabsTrigger value="badges" className="w-full">
-            Badges
-          </TabsTrigger>
-          <TabsTrigger value="leaderboard" className="w-full">
-            Leaderboard
-          </TabsTrigger>
-          <TabsTrigger value="activity" className="w-full">
-            Your Activity
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="leaderboard">
-          <Leaderboard
-            data={[]}
-            metadata={{ user_label: community?.metadata?.user_label, token_label: community?.metadata?.token_label }}
-            showSocialHandles={community?.metadata?.show_social_handles}
-          />
-        </TabsContent>
-        <TabsContent value="badges">
-          <CommunityBadges badges={profile?.badges || community.badges} />
-        </TabsContent>
-        <TabsContent value="activity">
-          <Activity rewards={profile?.rewards} />
-        </TabsContent>
-      </Tabs>
+      <BadgeProvider initialBadges={profile?.badges || community.badges}>
+        <Tabs defaultValue="badges" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="badges" className="w-full">
+              Badges
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="w-full">
+              Leaderboard
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="w-full">
+              Your Activity
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="leaderboard">
+            <Leaderboard
+              data={[]}
+              metadata={{ user_label: community?.metadata?.user_label, token_label: community?.metadata?.token_label }}
+              showSocialHandles={community?.metadata?.show_social_handles}
+            />
+          </TabsContent>
+          <TabsContent value="badges">
+            <CommunityBadges />
+          </TabsContent>
+          <TabsContent value="activity">
+            <Activity rewards={profile?.rewards} />
+          </TabsContent>
+        </Tabs>
+      </BadgeProvider>
     </div>
   );
 }
