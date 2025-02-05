@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import Activity from "@/components/activity";
 import CommunityBadges from "@/components/community-badges";
 import { CommunityBanner } from "@/components/community-banner";
