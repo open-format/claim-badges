@@ -377,7 +377,7 @@ async function getNonce(address: string, retryCount = 0): Promise<number> {
     const nextNonce = await redis.incr(redisKey);
 
     // If our nonce got too far ahead, reset it
-    if (nextNonce > currentNonce + 10) {
+    if (nextNonce > currentNonce + 10 || nextNonce < currentNonce) {
       await redis.set(redisKey, currentNonce.toString());
       return currentNonce;
     }
