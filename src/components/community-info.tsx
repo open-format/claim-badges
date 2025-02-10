@@ -12,7 +12,7 @@ export default function CommunityInfo({ title, description }: CommunityInfoProps
     const paragraphs = description.split("\n\n").filter((p) => p.trim() !== "");
 
     return (
-      <div>
+      <div className="space-y-2">
         {paragraphs.map((paragraph, index) => (
           <p key={index} className="text-sm">
             {paragraph}
