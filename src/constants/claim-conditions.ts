@@ -94,6 +94,13 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-02-11T00:00:00Z"),
     claimableTo: new Date("2025-02-11T23:59:59Z"),
+    hide: true,
+  },
+  {
+    badgeId: "0xd5239bf053e5eef35a67c80c4c4c0b20b8a0cde6",
+    // mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
+    claimableFrom: new Date("2025-02-12T00:00:00Z"),
+    claimableTo: new Date("2025-02-14T23:59:59Z"),
     hide: false,
   }
 ];
