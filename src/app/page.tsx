@@ -39,16 +39,16 @@ export default async function CommunityPage() {
         community?.metadata?.dark_mode ? "dark" : "light"
       )}
     >
-      {/* Community Profile */}
-      <CommunityProfile />
-
-      {/* Community Banner */}
-      <CommunityBanner banner_url={community.metadata.banner_url} accent_color={community.metadata.accent_color} />
-
-      {/* Community Info */}
-      <CommunityInfo title={community?.metadata?.title} description={community?.metadata?.description} />
-
       <BadgeProvider initialBadges={profile?.badges || community.badges}>
+        {/* Community Profile */}
+        <CommunityProfile />
+
+        {/* Community Banner */}
+        <CommunityBanner banner_url={community.metadata.banner_url} accent_color={community.metadata.accent_color} />
+
+        {/* Community Info */}
+        <CommunityInfo title={community?.metadata?.title} description={community?.metadata?.description} />
+
         <Tabs defaultValue="badges" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="badges" className="w-full">
