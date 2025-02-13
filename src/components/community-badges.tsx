@@ -2,18 +2,14 @@
 
 import { useBadgeContext } from "@/components/providers/badge-provider";
 import { ClaimStatus } from "@/constants/claim-conditions";
-import { useConfetti } from "@/contexts/confetti-context";
 import LoginModalDialog from "@/dialogs/login-modal-dialog";
 import { useRevalidate } from "@/hooks/useRevalidate";
-import { claimBadge } from "@/lib/openformat";
 import { getMetadata } from "@/lib/thirdweb";
 import { Hooks } from "@matchain/matchid-sdk-react";
 import { HelpCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { startTransition, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
-import { toast } from "sonner";
-import type { Address } from "viem";
 import RefreshButton from "./refresh-button";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { Button } from "./ui/button";
@@ -62,42 +58,28 @@ function Item({
   metadataURI: string;
   claimStatus: string;
 }) {
-  const { setBadges } = useBadgeContext();
+  const { claimBadgeAction } = useBadgeContext(); // Get claimBadgeAction from context
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [isClaiming, setIsClaiming] = useState<boolean>(false);
 
   const { address } = useUserInfo();
-  const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useRevalidate(shouldRevalidate, 2000, 3);
 
-  function handleClaim() {
+  const handleClaim = () => {
     setIsClaiming(true);
     startTransition(async () => {
       try {
-        const response = await claimBadge(
-          badge.id as Address,
-          metadata?.name as string,
-          address as Address,
-          metadataURI
-        );
-
-        setIsClaiming(false);
-        triggerConfetti();
-        toast.success("Badge claimed successfully!");
-
-        setBadges((currentBadges) => currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: true } : b)));
-      } catch (error) {
-        setIsClaiming(false);
-        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-        toast.error(errorMessage);
+        // Call claimBadgeAction from context, passing the badge object
+        await claimBadgeAction(badge);
       } finally {
+        setIsClaiming(false);
         setShouldRevalidate(true);
       }
     });
-  }
+  };
 
   useEffect(() => {
     async function fetchMetadata() {
