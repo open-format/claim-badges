@@ -66,7 +66,6 @@ function Item({
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [isClaiming, setIsClaiming] = useState<boolean>(false);
-  const [localBadge, setLocalBadge] = useState<BadgeWithCollectedStatus>(badge);
 
   const { address } = useUserInfo();
   const { triggerConfetti } = useConfetti();
@@ -85,12 +84,6 @@ function Item({
           metadataURI
         );
 
-        if (!response.success) {
-          setLocalBadge(badge);
-          throw new Error(response.error || "An unknown error occurred while claiming the badge.");
-        }
-
-        setLocalBadge((prev) => ({ ...prev, isCollected: true }));
         setIsClaiming(false);
         triggerConfetti();
         toast.success("Badge claimed successfully!");
@@ -100,7 +93,6 @@ function Item({
         setIsClaiming(false);
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
         toast.error(errorMessage);
-        setLocalBadge(badge);
       } finally {
         setShouldRevalidate(true);
       }
@@ -186,9 +178,9 @@ function Item({
               <Button
                 className="w-full"
                 onClick={handleClaim}
-                disabled={isClaiming || localBadge.isCollected || claimStatus !== ClaimStatus.Claimable}
+                disabled={isClaiming || badge.isCollected || claimStatus !== ClaimStatus.Claimable}
               >
-                {localBadge.isCollected
+                {badge.isCollected
                   ? "Claimed"
                   : isClaiming
                   ? "Claiming..."

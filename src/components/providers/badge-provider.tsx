@@ -2,6 +2,7 @@
 
 import { CLAIM_CONDITIONS, ClaimStatus } from "@/constants/claim-conditions";
 import dayjs from "dayjs";
+import Cookies from "js-cookie";
 import { type ReactNode, createContext, useContext, useMemo, useState } from "react";
 
 type BadgeContextType = {
@@ -9,6 +10,7 @@ type BadgeContextType = {
   setBadges: React.Dispatch<React.SetStateAction<BadgeWithCollectedStatus[]>>;
   sortedBadges: BadgeWithCollectedStatus[];
   checkClaimStatus: (badge: BadgeWithCollectedStatus) => string;
+  setAddress: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const BadgeContext = createContext<BadgeContextType | undefined>(undefined);
@@ -18,6 +20,7 @@ export const BadgeProvider: React.FC<{
   initialBadges: BadgeWithCollectedStatus[];
 }> = ({ children, initialBadges }) => {
   const [badges, setBadges] = useState<BadgeWithCollectedStatus[]>(initialBadges);
+  const address = Cookies.get("address");
 
   const sortBadges = (badgesToSort: BadgeWithCollectedStatus[]): BadgeWithCollectedStatus[] => {
     const BADGE_PRIORITY_ORDER = process.env.NEXT_PUBLIC_BADGE_ORDER?.split(",") || [];
@@ -38,7 +41,6 @@ export const BadgeProvider: React.FC<{
   };
 
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
-    // Add logging to understand which badges are not matching
     const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
 
     // If no condition is found, log the badge details
@@ -57,6 +59,7 @@ export const BadgeProvider: React.FC<{
     if (hide) return ClaimStatus.Hidden;
 
     const now = new Date();
+
     const ownsRequiredBadge = condition.mustOwnBadge
       ? badges?.some((b) => b.id === condition.mustOwnBadge && b.isCollected)
       : true;
@@ -87,10 +90,12 @@ export const BadgeProvider: React.FC<{
     return badge.isCollected ? ClaimStatus.Claimed : ClaimStatus.Claimable;
   };
 
-  const sortedBadges = useMemo(
-    () => sortBadges(badges.filter((badge) => !checkClaimStatus(badge).startsWith(ClaimStatus.Hidden))),
-    [badges]
-  );
+  const sortedBadges = useMemo(() => {
+    const filtered = badges.filter((badge) => !checkClaimStatus(badge).startsWith(ClaimStatus.Hidden));
+    const sorted = sortBadges(filtered);
+
+    return sorted;
+  }, [badges, address]);
 
   return (
     <BadgeContext.Provider
