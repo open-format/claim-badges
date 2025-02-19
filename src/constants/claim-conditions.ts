@@ -59,7 +59,7 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     // mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-01-29T00:00:00Z"),
     claimableTo: new Date("2025-02-15T23:59:59Z"),
-    hide: false,
+    hide: true,
   },
   {
     badgeId: "0x19a1e12bd12f2aa6a282d80118f2dcfe2288fd6b",
@@ -108,6 +108,13 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-02-15T00:00:00Z"),
     claimableTo: new Date("2025-02-15T23:59:59Z"),
+    hide: true,
+  },
+  {
+    badgeId: "0xdbf6e371cc920a5156c7b4b3d05ff4f4b980b35c",
+    mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
+    claimableFrom: new Date("2025-02-19T00:00:00Z"),
+    claimableTo: new Date("2025-02-19T23:59:59Z"),
     hide: false,
   }
 ];
