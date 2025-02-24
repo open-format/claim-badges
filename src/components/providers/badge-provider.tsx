@@ -48,16 +48,10 @@ export const BadgeProvider: React.FC<{
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
     const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
 
-    // If no condition is found, log the badge details
     if (!condition) {
-      console.warn(`No claim condition found for badge:`, {
-        id: badge.id,
-        name: badge.name,
-        availableConditions: CLAIM_CONDITIONS.map((c) => c.badgeId),
-      });
-
-      // Fallback to claimable if no specific condition is found
-      return badge.isCollected ? ClaimStatus.Claimed : ClaimStatus.Claimable;
+      // If no condition is found by badge has been collected, show Claimed
+      // Otherwise, show Hidden
+      return badge.isCollected ? ClaimStatus.Claimed : ClaimStatus.Hidden;
     }
 
     const hide = condition.hide && !badge.isCollected;
