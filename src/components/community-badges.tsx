@@ -1,20 +1,15 @@
 "use client";
 
 import { useBadgeContext } from "@/components/providers/badge-provider";
-import { CLAIM_CONDITIONS, ClaimStatus } from "@/constants/claim-conditions";
-import { useConfetti } from "@/contexts/confetti-context";
+import { ClaimStatus } from "@/constants/claim-conditions";
 import LoginModalDialog from "@/dialogs/login-modal-dialog";
 import { useRevalidate } from "@/hooks/useRevalidate";
-import { claimBadge } from "@/lib/openformat";
 import { getMetadata } from "@/lib/thirdweb";
 import { Hooks } from "@matchain/matchid-sdk-react";
-import dayjs from "dayjs";
 import { HelpCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { startTransition, useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
-import { toast } from "sonner";
-import type { Address } from "viem";
 import RefreshButton from "./refresh-button";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { Button } from "./ui/button";
@@ -25,72 +20,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 const { useUserInfo } = Hooks;
 
-const sortBadges = (badges: BadgeWithCollectedStatus[]): BadgeWithCollectedStatus[] => {
-  const BADGE_PRIORITY_ORDER = process.env.NEXT_PUBLIC_BADGE_ORDER?.split(",") || [];
-
-  return [...badges].sort((a, b) => {
-    // if (a.isCollected !== b.isCollected) {
-    //   return a.isCollected ? 1 : -1;
-    // }
-
-    const indexA = BADGE_PRIORITY_ORDER.indexOf(a.id);
-    const indexB = BADGE_PRIORITY_ORDER.indexOf(b.id);
-
-    if (indexA !== -1 && indexB !== -1) {
-      return indexA - indexB;
-    }
-
-    if (indexA !== -1) return -1;
-    if (indexB !== -1) return 1;
-
-    return (a.name || "").localeCompare(b.name || "");
-  });
-};
-
 export default function CommunityBadges() {
-  const { badges } = useBadgeContext();
+  const { sortedBadges, checkClaimStatus } = useBadgeContext();
 
-  const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
-    const hide = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id)?.hide && !badge.isCollected;
-    if (hide) return ClaimStatus.Hidden;
-
-    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
-    if (!condition) return ClaimStatus.Claimable;
-
-    const now = new Date();
-    const ownsRequiredBadge = condition.mustOwnBadge
-      ? badges?.some((b) => b.id === condition.mustOwnBadge && b.isCollected)
-      : true;
-    const withinDateRange =
-      condition.claimableFrom && condition.claimableTo
-        ? condition.claimableFrom <= now && now <= condition.claimableTo
-        : true;
-
-    if (!ownsRequiredBadge) {
-      const requiredBadge = badges?.find((b) => b.id === condition.mustOwnBadge);
-      return `${ClaimStatus.NotClaimableReason}You must own ${
-        requiredBadge?.name || "the required badge"
-      } before claiming this badge.`;
-    }
-    if (!withinDateRange) {
-      if (dayjs(condition.claimableFrom).isSame(condition.claimableTo, "day")) {
-        return `${ClaimStatus.NotClaimableReason}You can claim this badge between ${dayjs(
-          condition.claimableFrom
-        ).format("HH:mm")} - ${dayjs(condition.claimableTo).format("HH:mm")} on ${dayjs(condition.claimableFrom).format(
-          "D MMMM YYYY"
-        )}.`;
-      }
-      return `${ClaimStatus.NotClaimableReason}You can claim this badge between ${dayjs(condition.claimableFrom).format(
-        "MMMM D, YYYY"
-      )} and ${dayjs(condition.claimableTo).format("MMMM D, YYYY")}.`;
-    }
-
-    return badge.isCollected ? ClaimStatus.Claimed : ClaimStatus.Claimable;
-  };
-
-  const sortedBadges = sortBadges(badges.filter((badge) => !checkClaimStatus(badge).startsWith(ClaimStatus.Hidden)));
-
-  if (!badges || !badges.length) {
+  if (!sortedBadges || !sortedBadges.length) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
         <p className="text-muted-foreground">This community has no badges yet</p>
@@ -125,50 +58,28 @@ function Item({
   metadataURI: string;
   claimStatus: string;
 }) {
-  const { setBadges } = useBadgeContext();
+  const { claimBadgeAction } = useBadgeContext(); // Get claimBadgeAction from context
   const [metadata, setMetadata] = useState<{ [key: string]: string } | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [isClaiming, setIsClaiming] = useState<boolean>(false);
-  const [localBadge, setLocalBadge] = useState<BadgeWithCollectedStatus>(badge);
 
   const { address } = useUserInfo();
-  const { triggerConfetti } = useConfetti();
   const [shouldRevalidate, setShouldRevalidate] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useRevalidate(shouldRevalidate, 2000, 3);
 
-  function handleClaim() {
+  const handleClaim = () => {
     setIsClaiming(true);
     startTransition(async () => {
       try {
-        const response = await claimBadge(
-          badge.id as Address,
-          metadata?.name as string,
-          address as Address,
-          metadataURI
-        );
-
-        if (!response.success) {
-          setLocalBadge(badge);
-          throw new Error(response.error || "An unknown error occurred while claiming the badge.");
-        }
-
-        setLocalBadge((prev) => ({ ...prev, isCollected: true }));
-        setIsClaiming(false);
-        triggerConfetti();
-        toast.success("Badge claimed successfully!");
-
-        setBadges((currentBadges) => currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: true } : b)));
-      } catch (error) {
-        setIsClaiming(false);
-        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-        toast.error(errorMessage);
-        setLocalBadge(badge);
+        // Call claimBadgeAction from context, passing the badge object
+        await claimBadgeAction(badge);
       } finally {
+        setIsClaiming(false);
         setShouldRevalidate(true);
       }
     });
-  }
+  };
 
   useEffect(() => {
     async function fetchMetadata() {
@@ -249,9 +160,9 @@ function Item({
               <Button
                 className="w-full"
                 onClick={handleClaim}
-                disabled={isClaiming || localBadge.isCollected || claimStatus !== ClaimStatus.Claimable}
+                disabled={isClaiming || badge.isCollected || claimStatus !== ClaimStatus.Claimable}
               >
-                {localBadge.isCollected
+                {badge.isCollected
                   ? "Claimed"
                   : isClaiming
                   ? "Claiming..."

@@ -11,7 +11,7 @@ import { Redis } from "ioredis";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { cache } from "react";
-import { type Address, parseEther, stringToHex } from "viem";
+import { type Address, erc721Abi, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { getCurrentUser, getUserHandle } from "./privy";
 import { publicClient, walletClient } from "./viem";
@@ -419,20 +419,30 @@ async function sendTransactionWithRetry(
 
 export async function claimBadge(badgeId: Address, badgeName: string, user: Address, ipfsHash: string) {
   try {
+    const alreadyOwns = await publicClient.readContract({
+      address: badgeId as Address,
+      abi: erc721Abi,
+      functionName: "balanceOf",
+      args: [user],
+    });
+
+    if (alreadyOwns > BigInt(0)) {
+      return { success: false, message: "Badge already claimed" };
+    }
+
     // Fetch user's collected badges
     const userProfile = await fetchUserProfile(process.env.NEXT_PUBLIC_COMMUNITY_ID as string);
     const userBadges = userProfile?.badges || [];
 
     if (!userProfile || !userBadges) {
-      return { success: false, error: "Badges not found." };
+      return { success: false, message: "Badges not found." };
     }
 
     // Find the badge and its claim condition
-    const badge = userBadges.find((b) => b.id === badgeId);
     const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badgeId);
 
     if (!condition) {
-      return { success: false, error: "Badge is not claimable due to missing conditions." };
+      return { success: false, message: "Badge is not claimable due to missing conditions." };
     }
 
     const now = new Date();
@@ -446,15 +456,11 @@ export async function claimBadge(badgeId: Address, badgeName: string, user: Addr
         : true;
 
     if (!ownsRequiredBadge) {
-      return { success: false, error: "You must own the required badge before claiming this badge." };
+      return { success: false, message: "You must own the required badge before claiming this badge." };
     }
 
     if (!withinDateRange) {
-      return { success: false, error: "This badge is not claimable at this time." };
-    }
-
-    if (badge?.isCollected) {
-      return { success: false, error: "Badge has already been claimed." };
+      return { success: false, message: "This badge is not claimable at this time." };
     }
 
     // Proceed with claiming the badge
@@ -507,6 +513,6 @@ export async function claimBadge(badgeId: Address, badgeName: string, user: Addr
     return { success: true };
   } catch (error) {
     console.error({ error });
-    return { success: false, error: error.message };
+    throw error;
   }
 }

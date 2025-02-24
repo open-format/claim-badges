@@ -1,8 +1,9 @@
 "use client";
 
+import { useBadgeContext } from "@/components/providers/badge-provider";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { revalidate } from "@/lib/openformat";
+import { fetchUserProfile, revalidate } from "@/lib/openformat";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Hooks } from "@matchain/matchid-sdk-react";
 import { Loader2 } from "lucide-react";
@@ -30,6 +31,7 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
   const { getLoginEmailCode, loginByEmail, address } = useUserInfo();
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isLoadingCode, setIsLoadingCode] = useState(false);
+  const { setBadges } = useBadgeContext();
 
   // Email form
   const emailForm = useForm<z.infer<typeof emailSchema>>({
@@ -67,7 +69,13 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
     const email = emailForm.getValues("email");
     try {
       loginByEmail({ email, code: data.code })
-        .then(() => {
+        .then(async () => {
+          const userProfile = await fetchUserProfile(process.env.NEXT_PUBLIC_COMMUNITY_ID as string);
+
+          if (userProfile?.badges) {
+            setBadges(userProfile.badges);
+          }
+
           setIsOpen(false);
           revalidate();
         })
