@@ -20,14 +20,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 const { useUserInfo } = Hooks;
 
+const MASTERCLASS_BADGE_IDS = process.env.NEXT_PUBLIC_MASTERCLASS_BADGE_IDS?.split(",") || [];
+
 export default function CommunityBadges() {
-  const { sortedBadges, checkClaimStatus } = useBadgeContext();
+  const { badges } = useBadgeContext();
 
-  const communityBadges = sortedBadges.filter(
-    (badge) => !process.env.NEXT_PUBLIC_MASTERCLASS_BADGE_IDS?.split(",").includes(badge.id || "")
-  );
+  const masterClassBadges = badges.filter((badge) => MASTERCLASS_BADGE_IDS.includes(badge.id || ""));
 
-  if (!communityBadges || !communityBadges.length) {
+  console.log(masterClassBadges);
+
+  if (!masterClassBadges || !masterClassBadges.length) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
         <p className="text-muted-foreground">This community has no badges yet</p>
@@ -45,8 +47,13 @@ export default function CommunityBadges() {
         <CardDescription>Badges available to collect in this community.</CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        {communityBadges.map((badge) => (
-          <Item key={badge.id} badge={badge} metadataURI={badge.metadataURI} claimStatus={checkClaimStatus(badge)} />
+        {masterClassBadges.map((badge) => (
+          <Item
+            key={badge.id}
+            badge={badge}
+            metadataURI={badge.metadataURI}
+            claimStatus={badge.isCollected ? ClaimStatus.Claimed : ClaimStatus.Claimable}
+          />
         ))}
       </CardContent>
     </Card>
@@ -77,7 +84,7 @@ function Item({
     startTransition(async () => {
       try {
         // Call claimBadgeAction from context, passing the badge object
-        await claimBadgeAction(badge);
+        await claimBadgeAction(badge, badge.name);
       } finally {
         setIsClaiming(false);
         setShouldRevalidate(true);

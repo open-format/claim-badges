@@ -16,6 +16,7 @@ interface Badge {
   id: string;
   name: string;
   metadataURI: string;
+  rewardId?: string;
 }
 
 interface BadgeWithCollectedStatus extends Badge {

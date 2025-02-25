@@ -14,7 +14,7 @@ type BadgeContextType = {
   setBadges: React.Dispatch<React.SetStateAction<BadgeWithCollectedStatus[]>>;
   sortedBadges: BadgeWithCollectedStatus[];
   checkClaimStatus: (badge: BadgeWithCollectedStatus) => string;
-  claimBadgeAction: (badge: BadgeWithCollectedStatus) => Promise<void>; // Modified claimBadgeAction signature
+  claimBadgeAction: (badge: BadgeWithCollectedStatus, rewardId?: string) => Promise<void>; // Modified claimBadgeAction signature
 };
 
 const BadgeContext = createContext<BadgeContextType | undefined>(undefined);
@@ -97,7 +97,7 @@ export const BadgeProvider: React.FC<{
   }, [badges, address]);
 
   const claimBadgeAction = useCallback(
-    async (badge: BadgeWithCollectedStatus) => {
+    async (badge: BadgeWithCollectedStatus, rewardId?: string) => {
       if (!address) {
         toast.error("Please login to claim badges."); // Added login check
         return;
@@ -110,7 +110,8 @@ export const BadgeProvider: React.FC<{
           badge.id as Address,
           badge.name as string,
           address as Address,
-          badge.metadataURI
+          badge.metadataURI,
+          rewardId
         );
 
         if (!result.success) {
