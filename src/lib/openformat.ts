@@ -417,7 +417,13 @@ async function sendTransactionWithRetry(
   throw new Error("Failed to claim badge. Please try again later.");
 }
 
-export async function claimBadge(badgeId: Address, badgeName: string, user: Address, ipfsHash: string) {
+export async function claimBadge(
+  badgeId: Address,
+  badgeName: string,
+  user: Address,
+  ipfsHash: string,
+  rewardId?: string
+) {
   try {
     const alreadyOwns = await publicClient.readContract({
       address: badgeId as Address,
@@ -473,7 +479,7 @@ export async function claimBadge(badgeId: Address, badgeName: string, user: Addr
         args: [
           badgeId as Address,
           user as Address,
-          stringToHex(`Claimed ${badgeName}`, { size: 32 }),
+          stringToHex(rewardId ?? `Claimed ${badgeName}`, { size: 32 }),
           stringToHex("MISSION", { size: 32 }),
           stringToHex(ipfsHash),
         ],

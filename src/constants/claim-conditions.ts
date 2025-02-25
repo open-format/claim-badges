@@ -33,4 +33,7 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     badgeId: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     hide: false,
   },
+  {
+    badgeId: "0xd1b3f1e744d705b8c52faa3c6f769ddbd6ffe9d8",
+  },
 ];

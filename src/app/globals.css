@@ -4,6 +4,7 @@
 
 body {
   font-family: "Manrope", Helvetica, sans-serif;
+  overscroll-behavior: none;
 }
 
 @layer base {
