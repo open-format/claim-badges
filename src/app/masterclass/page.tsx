@@ -42,12 +42,14 @@ export default async function CommunityPage() {
         <CommunityProfile />
 
         {/* Community Banner */}
-        <CommunityBanner banner_url={matchainImage} accent_color={community.metadata.accent_color} />
+        <div className="bg-white rounded-xl bg-opacity-95">
+          <CommunityBanner banner_url={matchainImage} accent_color={community.metadata.accent_color} />
+        </div>
 
         {/* Community Info */}
         <CommunityInfo
-          title="Matchain Masterclasses"
-          description="Prove attendance to Matchain masterclasses with on-chain badges"
+          title="PSG x Matchain Masterclass"
+          description="Prove your attendance at the PSG x Matchain Masterclass through onchain badges."
         />
         <MasterclassBadges />
       </BadgeProvider>
