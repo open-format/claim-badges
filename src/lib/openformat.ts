@@ -445,7 +445,7 @@ export async function claimBadge(
     }
 
     // Find the badge and its claim condition
-    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badgeId);
+    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId.toLowerCase().trim() === badgeId.toLowerCase().trim());
 
     if (!condition) {
       return { success: false, message: "Badge is not claimable due to missing conditions." };

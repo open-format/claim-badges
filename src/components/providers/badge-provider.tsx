@@ -46,7 +46,7 @@ export const BadgeProvider: React.FC<{
   };
 
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
-    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId === badge.id);
+    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId.toLowerCase().trim() === badge.id.toLowerCase().trim());
 
     if (!condition) {
       // If no condition is found by badge has been collected, show Claimed

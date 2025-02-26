@@ -41,6 +41,6 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
     claimableFrom: new Date("2025-02-26T00:00:00Z"),
     claimableTo: new Date("2025-02-26T23:59:59Z"),
-    hide: false
-  }
+    hide: false,
+  },
 ];
