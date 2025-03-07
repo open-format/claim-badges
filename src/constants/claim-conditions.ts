@@ -37,16 +37,9 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     badgeId: "0xd1b3f1e744d705b8c52faa3c6f769ddbd6ffe9d8",
   },
   {
-    badgeId: "0x5491c302020e3ece796f489ebdef837db55b93be",
-    claimableFrom: new Date("2025-03-01T00:00:00Z"),
-    claimableTo: new Date("2025-03-05T23:59:59Z"),
-    hide: false,
-  },
-  {
-    badgeId: "0x805eab618a5fb76aa79fea551b3da3b65d2f2dae",
-    mustOwnBadge: "0x3e9af5c6ae7f7936c629de669a0e3295f3266fb0",
-    claimableFrom: new Date("2025-03-01T00:00:00Z"),
-    claimableTo: new Date("2025-03-01T23:59:59Z"),
+    badgeId: "0x202848516cb28dd8b1d69dc8ddda5f42cac97d7f",
+    claimableFrom: new Date("2025-03-07T00:00:00Z"),
+    claimableTo: new Date("2025-03-08T23:59:59Z"),
     hide: false,
   },
 ];
