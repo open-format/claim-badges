@@ -42,4 +42,10 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     claimableTo: new Date("2025-03-08T23:59:59Z"),
     hide: false,
   },
+  {
+    badgeId: "0xae7271f2a46ee56d7fed9149253a2c395c5e14bc",
+    claimableFrom: new Date("2025-03-08T00:00:00Z"),
+    claimableTo: new Date("2025-03-08T23:59:59Z"),
+    hide: false,
+  },
 ];
