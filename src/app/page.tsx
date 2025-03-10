@@ -66,14 +66,16 @@ export default async function CommunityPage() {
             <div className="md:grid md:grid-cols-3 items-center gap-8 justify-between space-y-4">
               {/* Text Content */}
               <div className="flex-1 space-y-6">
-                <h1 className="text-4xl">
-                  Fuel Your Passion.
-                  <br /> Earn PSG Rewards.
-                </h1>
-                <p>
-                  PSG is a community-driven platform that rewards users for their contributions to
-                  the community.
-                </p>
+                <div>
+                  <h1 className="text-4xl">
+                    Fuel Your Passion.
+                    <br /> Earn PSG Rewards.
+                  </h1>
+                  <p>
+                    PSG is a community-driven platform that rewards users for their contributions to
+                    the community.
+                  </p>
+                </div>
                 {/* CTA */}
                 <div className="flex gap-4">
                   <LoginModalDialog initialMode="signup">
@@ -89,7 +91,7 @@ export default async function CommunityPage() {
           </div>
         </section>
         {/* PERKS */}
-        <section className="bg-white text-black mx-auto max-w-screen-lg space-y-12">
+        <section className="bg-white text-black mx-auto max-w-screen-lg space-y-12 p-4">
           <div className="grid md:grid-cols-2 gap-4 items-center">
             <div>
               <div className="space-y-2">

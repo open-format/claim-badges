@@ -14,11 +14,14 @@ const { useUserInfo } = Hooks;
 
 export default function CommunityBadges() {
   const { claimedBadges } = useBadgeContext();
+  const { address } = useUserInfo();
 
   if (claimedBadges.length === 0) {
     return (
       <div className="flex flex-col px-4">
-        <p className="text-muted-foreground">No badges collected</p>
+        <p className="text-muted-foreground">
+          {address ? "No badges collected" : "Login or become a member to view badges"}
+        </p>
       </div>
     );
   }

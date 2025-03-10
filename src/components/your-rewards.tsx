@@ -34,7 +34,7 @@ function Item({
 }) {
   const { address } = useUserInfo();
   return (
-    <Card className="flex flex-col justify-between bg-transparent text-white">
+    <Card className="flex flex-col justify-between bg-transparent text-white" variant="outline">
       <CardContent className="flex items-center justify-center p-4">
         <AspectRatio ratio={1 / 1}>
           {reward.image && (
