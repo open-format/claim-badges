@@ -2,15 +2,10 @@ export const maxDuration = 60;
 
 import { BadgeTabs } from "@/components/badge-tabs";
 
-import CommunityProfile from "@/components/community-profile";
-import Header from "@/components/header";
+import Hero from "@/components/hero";
 import { BadgeProvider } from "@/components/providers/badge-provider";
-import Tiers from "@/components/tiers";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Button } from "@/components/ui/button";
-import LoginModalDialog from "@/dialogs/login-modal-dialog";
 import { checkRewardStatus, fetchCommunity, fetchUserProfile } from "@/lib/openformat";
-import { Trophy } from "lucide-react";
 import Image from "next/image";
 
 export default async function CommunityPage() {
@@ -39,46 +34,7 @@ export default async function CommunityPage() {
     <div className="sticky top-0 space-y-8">
       <BadgeProvider initialBadges={profile?.badges || community.badges}>
         {/* HERO */}
-        <section
-          className="relative bg-cover bg-center bg-no-repeat min-h-[600px] text-white space-y-6 p-4 md:p-12
-            bg-[url('/images/background-mobile.png')] 
-            md:bg-[url('/images/background-desktop.png')]"
-        >
-          {/* Add black overlay */}
-          <div className="absolute inset-0 bg-black/50" />
-          {/* Content wrapper to ensure it appears above the overlay */}
-          <div className="relative z-10 space-y-6 max-w-screen-lg mx-auto">
-            {/* HEADER */}
-            <Header />
-            <div className="md:grid md:grid-cols-3 items-center gap-8 justify-between space-y-4">
-              {/* Text Content */}
-              <div className="flex-1 space-y-12 md:space-y-8">
-                <div className="space-y-6">
-                  <h1 className="text-6xl md:text-4xl">
-                    Fuel Your Passion.
-                    <br /> Earn PSG Rewards.
-                  </h1>
-                  <h2>
-                    PSG is a community-driven platform that rewards users for their contributions to
-                    the community.
-                  </h2>
-                </div>
-                {/* CTA */}
-                <div className="flex gap-4">
-                  <LoginModalDialog initialMode="signup">
-                    <Button size="lg" className="bg-matchain-gold">
-                      Become a member
-                    </Button>
-                  </LoginModalDialog>
-                </div>
-              </div>
-              {/* PROMO */}
-              <div className="md:col-span-2">
-                <Tiers />
-              </div>
-            </div>
-          </div>
-        </section>
+        <Hero />
         {/* PERKS */}
         <section className="bg-white text-black mx-auto max-w-screen-lg space-y-12 p-4">
           <div className="grid md:grid-cols-2 gap-4 items-center">
