@@ -53,7 +53,9 @@ export async function getChainFromCommunityOrCookie(
   if (!chain) {
     const cookieStore = await cookies();
     const chainName = cookieStore.get("chainName");
-    chain = chainName ? getChain(chainName.value as ChainName) : getChain(ChainName.ARBITRUM_SEPOLIA);
+    chain = chainName
+      ? getChain(chainName.value as ChainName)
+      : getChain(ChainName.ARBITRUM_SEPOLIA);
   }
 
   return chain;
@@ -104,10 +106,16 @@ export async function fetchAllCommunities() {
 
       return { data: matchedCommunities || [], error: null };
     } catch {
-      return { data: [], error: "Failed to fetch onchain communities. Please try again." };
+      return {
+        data: [],
+        error: "Failed to fetch onchain communities. Please try again.",
+      };
     }
   } catch {
-    return { data: [], error: "Failed to fetch communities. Please try again later." };
+    return {
+      data: [],
+      error: "Failed to fetch communities. Please try again later.",
+    };
   }
 }
 
@@ -339,10 +347,10 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
       chain.apiChainName === ChainName.AURORA
         ? "aurora"
         : chain.apiChainName === ChainName.TURBO
-        ? "turbo"
-        : chain.apiChainName === ChainName.BASE
-        ? "base"
-        : "arbitrum-sepolia"
+          ? "turbo"
+          : chain.apiChainName === ChainName.BASE
+            ? "base"
+            : "arbitrum-sepolia"
     );
     const response = await apiClient.get(`/leaderboard?${params}`);
 
@@ -357,13 +365,17 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
 
     return leaderboardWithHandles;
   } catch (error) {
-    return { error: "Failed to fetch leaderboard data. Please try again later." };
+    return {
+      error: "Failed to fetch leaderboard data. Please try again later.",
+    };
   }
 }
 
 async function getNonce(address: string, retryCount = 0): Promise<number> {
   try {
-    const currentNonce = await publicClient.getTransactionCount({ address: address as Address });
+    const currentNonce = await publicClient.getTransactionCount({
+      address: address as Address,
+    });
     console.log("Current nonce:", currentNonce);
     const redisKey = `nonce:${address}`;
 
@@ -445,10 +457,15 @@ export async function claimBadge(
     }
 
     // Find the badge and its claim condition
-    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId.toLowerCase().trim() === badgeId.toLowerCase().trim());
+    const condition = CLAIM_CONDITIONS.find(
+      (c) => c.badgeId.toLowerCase().trim() === badgeId.toLowerCase().trim()
+    );
 
     if (!condition) {
-      return { success: false, message: "Badge is not claimable due to missing conditions." };
+      return {
+        success: false,
+        message: "Badge is not claimable due to missing conditions.",
+      };
     }
 
     const now = new Date();
@@ -462,11 +479,17 @@ export async function claimBadge(
         : true;
 
     if (!ownsRequiredBadge) {
-      return { success: false, message: "You must own the required badge before claiming this badge." };
+      return {
+        success: false,
+        message: "You must own the required badge before claiming this badge.",
+      };
     }
 
     if (!withinDateRange) {
-      return { success: false, message: "This badge is not claimable at this time." };
+      return {
+        success: false,
+        message: "This badge is not claimable at this time.",
+      };
     }
 
     // Proceed with claiming the badge
@@ -520,5 +543,22 @@ export async function claimBadge(
   } catch (error) {
     console.error({ error });
     throw error;
+  }
+}
+
+export async function checkRewardStatus() {
+  const cookieStore = await cookies();
+  const address = cookieStore.get("address");
+
+  const winners =
+    process.env.CNY_REWARD_WINNERS?.split(",").map((address) => address.trim().toLowerCase()) || [];
+
+  if (!winners) {
+    return false;
+  }
+
+  if (winners.includes(address?.value?.toLowerCase() as Address)) {
+    console.log("User is a winner");
+    return true;
   }
 }
