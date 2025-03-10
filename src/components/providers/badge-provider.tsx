@@ -13,6 +13,7 @@ type BadgeContextType = {
   badges: BadgeWithCollectedStatus[];
   setBadges: React.Dispatch<React.SetStateAction<BadgeWithCollectedStatus[]>>;
   sortedBadges: BadgeWithCollectedStatus[];
+  claimedBadges: BadgeWithCollectedStatus[];
   checkClaimStatus: (badge: BadgeWithCollectedStatus) => string;
   claimBadgeAction: (badge: BadgeWithCollectedStatus, rewardId?: string) => Promise<void>; // Modified claimBadgeAction signature
 };
@@ -25,6 +26,7 @@ export const BadgeProvider: React.FC<{
 }> = ({ children, initialBadges }) => {
   const [badges, setBadges] = useState<BadgeWithCollectedStatus[]>(initialBadges);
   const address = Cookies.get("address");
+  console.log({ address });
   const { triggerConfetti } = useConfetti();
 
   const sortBadges = (badgesToSort: BadgeWithCollectedStatus[]): BadgeWithCollectedStatus[] => {
@@ -46,7 +48,9 @@ export const BadgeProvider: React.FC<{
   };
 
   const checkClaimStatus = (badge: BadgeWithCollectedStatus) => {
-    const condition = CLAIM_CONDITIONS.find((c) => c.badgeId.toLowerCase().trim() === badge.id.toLowerCase().trim());
+    const condition = CLAIM_CONDITIONS.find(
+      (c) => c.badgeId.toLowerCase().trim() === badge.id.toLowerCase().trim()
+    );
 
     if (!condition) {
       // If no condition is found by badge has been collected, show Claimed
@@ -77,23 +81,29 @@ export const BadgeProvider: React.FC<{
       if (dayjs(condition.claimableFrom).isSame(condition.claimableTo, "day")) {
         return `${ClaimStatus.NotClaimableReason}You can claim this badge between ${dayjs(
           condition.claimableFrom
-        ).format("HH:mm")} - ${dayjs(condition.claimableTo).format("HH:mm")} on ${dayjs(condition.claimableFrom).format(
-          "D MMMM YYYY"
-        )}.`;
+        ).format("HH:mm")} - ${dayjs(condition.claimableTo).format("HH:mm")} on ${dayjs(
+          condition.claimableFrom
+        ).format("D MMMM YYYY")}.`;
       }
-      return `${ClaimStatus.NotClaimableReason}You can claim this badge between ${dayjs(condition.claimableFrom).format(
-        "MMMM D, YYYY"
-      )} and ${dayjs(condition.claimableTo).format("MMMM D, YYYY")}.`;
+      return `${ClaimStatus.NotClaimableReason}You can claim this badge between ${dayjs(
+        condition.claimableFrom
+      ).format("MMMM D, YYYY")} and ${dayjs(condition.claimableTo).format("MMMM D, YYYY")}.`;
     }
 
     return badge.isCollected ? ClaimStatus.Claimed : ClaimStatus.Claimable;
   };
 
   const sortedBadges = useMemo(() => {
-    const filtered = badges.filter((badge) => !checkClaimStatus(badge).startsWith(ClaimStatus.Hidden));
+    const filtered = badges.filter((badge) =>
+      checkClaimStatus(badge).startsWith(ClaimStatus.Claimable)
+    );
     const sorted = sortBadges(filtered);
 
     return sorted;
+  }, [badges, address]);
+
+  const claimedBadges = useMemo(() => {
+    return badges.filter((badge) => checkClaimStatus(badge).startsWith(ClaimStatus.Claimed));
   }, [badges, address]);
 
   const claimBadgeAction = useCallback(
@@ -103,7 +113,9 @@ export const BadgeProvider: React.FC<{
         return;
       }
 
-      setBadges((currentBadges) => currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: true } : b)));
+      setBadges((currentBadges) =>
+        currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: true } : b))
+      );
 
       try {
         const result = await claimBadgeAPI(
@@ -124,7 +136,9 @@ export const BadgeProvider: React.FC<{
         triggerConfetti();
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "An unknown error occurred");
-        setBadges((currentBadges) => currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: false } : b)));
+        setBadges((currentBadges) =>
+          currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: false } : b))
+        );
         throw error;
       }
     },
@@ -138,6 +152,7 @@ export const BadgeProvider: React.FC<{
         setBadges,
         sortedBadges,
         checkClaimStatus,
+        claimedBadges,
         claimBadgeAction, // Expose claimBadgeAction
       }}
     >

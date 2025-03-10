@@ -7,7 +7,7 @@ import { fetchCommunity } from "@/lib/openformat";
 import { addressSplitter } from "@/lib/utils";
 import { Hooks } from "@matchain/matchid-sdk-react";
 import Cookies from "js-cookie";
-import { CopyIcon, LogOut } from "lucide-react";
+import { CopyIcon, LogOut, PersonStandingIcon, UserIcon } from "lucide-react";
 import { startTransition, useEffect } from "react";
 import { toast } from "sonner";
 import { useBadgeContext } from "./providers/badge-provider";
@@ -54,7 +54,7 @@ export default function Profile() {
 
   return address ? (
     <DropdownMenu>
-      <DropdownMenuTrigger>{address && <Avatar seed={address} />}</DropdownMenuTrigger>
+      <DropdownMenuTrigger>{address && <UserIcon />}</DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem onClick={copyAddress} className="font-bold">
           <span>{addressSplitter(address || "")}</span>
@@ -71,7 +71,7 @@ export default function Profile() {
     </DropdownMenu>
   ) : (
     <LoginModalDialog>
-      <Button>Login</Button>
+      <Button variant="ghost">login</Button>
     </LoginModalDialog>
   );
 }

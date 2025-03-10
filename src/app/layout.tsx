@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import Script from "next/script";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -12,7 +13,7 @@ const manrope = Manrope({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const community = await fetchCommunity(process.env.NEXT_PUBLIC_COMMUNITY_ID);
+  const community = await fetchCommunity(process.env.NEXT_PUBLIC_COMMUNITY_ID as string);
 
   // Use VERCEL_URL in production, fallback to localhost in development
   const baseUrl = process.env.VERCEL_URL
@@ -55,19 +56,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const community = await fetchCommunity(process.env.NEXT_PUBLIC_COMMUNITY_ID);
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script src="https://tally.so/widgets/embed.js" strategy="lazyOnload" />
+      </head>
       <body className={`${manrope.variable} antialiased`}>
         <Providers>
-          <main
-            className={cn(
-              "md:px-24 h-full py-2 min-h-screen bg-background",
-              community?.metadata?.dark_mode ? "dark" : "light"
-            )}
-          >
-            {children}
-          </main>
+          <main>{children}</main>
         </Providers>
         <Toaster position="top-center" />
       </body>

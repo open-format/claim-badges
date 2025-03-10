@@ -142,3 +142,13 @@ type CurrentUser = {
   wallet_address: Address;
   apps: string[];
 };
+
+type CampaignReward = {
+  id: number;
+  name: string;
+  description: {
+    authenticated: string;
+    unauthenticated: string;
+  };
+  image: string;
+};

@@ -4,7 +4,6 @@
 
 body {
   font-family: "Manrope", Helvetica, sans-serif;
-  overscroll-behavior: none;
 }
 
 @layer base {
@@ -77,10 +76,10 @@ body {
     @apply font-semibold tracking-tighter;
   }
   h1 {
-    @apply text-2xl;
+    @apply text-4xl;
   }
   h2 {
-    @apply text-xl;
+    @apply text-2xl;
   }
   h3 {
     @apply text-base;

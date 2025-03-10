@@ -11,8 +11,21 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../components/ui/form";
 
 const { useUserInfo } = Hooks;
 
@@ -26,12 +39,19 @@ const codeSchema = z.object({
   code: z.string().length(6, "Code must be 6 digits"),
 });
 
-export default function LoginModalDialog({ children }: { children: React.ReactNode }) {
+export default function LoginModalDialog({
+  children,
+  initialMode = "login",
+}: {
+  children: React.ReactNode;
+  initialMode?: "login" | "signup";
+}) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { getLoginEmailCode, loginByEmail, address } = useUserInfo();
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isLoadingCode, setIsLoadingCode] = useState(false);
   const { setBadges } = useBadgeContext();
+  const [mode, setMode] = useState<"login" | "signup">(initialMode);
 
   // Email form
   const emailForm = useForm<z.infer<typeof emailSchema>>({
@@ -70,7 +90,9 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
     try {
       loginByEmail({ email, code: data.code })
         .then(async () => {
-          const userProfile = await fetchUserProfile(process.env.NEXT_PUBLIC_COMMUNITY_ID as string);
+          const userProfile = await fetchUserProfile(
+            process.env.NEXT_PUBLIC_COMMUNITY_ID as string
+          );
 
           if (userProfile?.badges) {
             setBadges(userProfile.badges);
@@ -97,11 +119,30 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
 
   function toggle() {
     setIsOpen((t) => !t);
-    // Reset forms when toggling
+    setMode(initialMode);
     emailForm.reset();
     codeForm.reset();
     setIsCodeSent(false);
   }
+
+  const switchMode = () => {
+    setMode(mode === "login" ? "signup" : "login");
+    emailForm.reset();
+    codeForm.reset();
+    setIsCodeSent(false);
+  };
+
+  const getDialogTitle = () => {
+    if (address) return "User Profile";
+    return mode === "login" ? "Welcome Back!" : "Join PSG Community";
+  };
+
+  const getDialogDescription = () => {
+    if (address) return null;
+    return mode === "login"
+      ? "Sign in with your email to access your rewards and badges"
+      : "Create an account to start earning rewards and collecting badges";
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
@@ -112,7 +153,10 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
         }}
       >
         <DialogHeader>
-          <DialogTitle>{address ? "User Profile" : "Login"}</DialogTitle>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
+          {getDialogDescription() && (
+            <p className="text-sm text-muted-foreground">{getDialogDescription()}</p>
+          )}
         </DialogHeader>
         <div className="space-y-4">
           {!isCodeSent ? (
@@ -135,17 +179,22 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
                   {isLoadingCode ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
+                      Sending code...
                     </>
+                  ) : mode === "login" ? (
+                    "Continue with Email"
                   ) : (
-                    "Submit"
+                    "Create Account"
                   )}
                 </Button>
               </form>
             </Form>
           ) : (
             <Form {...codeForm}>
-              <form onSubmit={codeForm.handleSubmit(handleLogin)} className="flex flex-col items-center space-y-4">
+              <form
+                onSubmit={codeForm.handleSubmit(handleLogin)}
+                className="flex flex-col items-center space-y-4"
+              >
                 <div className="text-sm text-muted-foreground mb-2 w-full">
                   Enter the 6-digit code sent to {emailForm.getValues("email")}
                 </div>
@@ -206,6 +255,26 @@ export default function LoginModalDialog({ children }: { children: React.ReactNo
               </form>
             </Form>
           )}
+
+          <div className="text-center pt-4">
+            <p className="text-sm text-muted-foreground">
+              {mode === "login" ? (
+                <>
+                  Don't have an account?{" "}
+                  <button onClick={switchMode} className="text-primary hover:underline font-medium">
+                    Sign up
+                  </button>
+                </>
+              ) : (
+                <>
+                  Already have an account?{" "}
+                  <button onClick={switchMode} className="text-primary hover:underline font-medium">
+                    Log in
+                  </button>
+                </>
+              )}
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
