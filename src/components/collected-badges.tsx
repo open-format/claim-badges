@@ -9,19 +9,45 @@ import { useEffect, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
+import { Button } from "./ui/button";
+import LoginModalDialog from "@/dialogs/login-modal-dialog";
 
 const { useUserInfo } = Hooks;
 
-export default function CommunityBadges() {
+export default function CommunityBadges({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
   const { claimedBadges } = useBadgeContext();
   const { address } = useUserInfo();
 
   if (claimedBadges.length === 0) {
     return (
-      <div className="flex flex-col px-4">
-        <p className="text-muted-foreground">
-          {address ? "No badges collected" : "Login or become a member to view badges"}
-        </p>
+      <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+        {address ? (
+          <>
+            <div className="text-muted-foreground/80 text-4xl">✨</div>
+            <h3 className="text-xl font-semibold">Start Your Collection!</h3>
+            <p className="text-muted-foreground max-w-sm">
+              Ready to begin your journey? Discover and claim your first badge to start building
+              your collection.
+            </p>
+            <Button onClick={() => setActiveTab("badges")}>View Available Badges</Button>
+          </>
+        ) : (
+          <>
+            <div className="text-muted-foreground/80 text-4xl">🔒</div>
+            <h3 className="text-xl font-semibold">Login to View Your Collection</h3>
+            <p className="text-muted-foreground max-w-sm">
+              Sign in to start collecting and tracking your PSG badges and rewards.
+            </p>
+            <div className="space-x-2">
+              <LoginModalDialog initialMode="signup">
+                <Button className="bg-matchain-gold">Become a member</Button>
+              </LoginModalDialog>
+              <LoginModalDialog>
+                <Button>Login</Button>
+              </LoginModalDialog>
+            </div>
+          </>
+        )}
       </div>
     );
   }

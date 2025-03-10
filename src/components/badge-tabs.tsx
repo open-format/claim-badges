@@ -28,7 +28,7 @@ export function BadgeTabs({ cnyRewardStatus }: { cnyRewardStatus: boolean }) {
           <NewBadges onClaimSuccess={() => setActiveTab("collected")} />
         </TabsContent>
         <TabsContent value="collected">
-          <CollectedBadges />
+          <CollectedBadges setActiveTab={setActiveTab} />
         </TabsContent>
         <TabsContent value="rewards">
           <Rewards cnyRewardStatus={cnyRewardStatus} />

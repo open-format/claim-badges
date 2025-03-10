@@ -33,8 +33,13 @@ export default function NewBadges({
 
   if (!communityBadges || !communityBadges.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <p className="text-muted-foreground">No new badges available to claim</p>
+      <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+        <div className="text-muted-foreground/80 text-4xl">🏆</div>
+        <h3 className="text-xl font-semibold">All Caught Up!</h3>
+        <p className="text-muted-foreground max-w-sm">
+          You've claimed all available badges for now. Check back soon for new opportunities to earn
+          more rewards!
+        </p>
       </div>
     );
   }
