@@ -40,8 +40,9 @@ export default async function CommunityPage() {
       <BadgeProvider initialBadges={profile?.badges || community.badges}>
         {/* HERO */}
         <section
-          className="relative bg-cover bg-center bg-no-repeat min-h-[500px] text-white p-4 md:p-12"
-          style={{ backgroundImage: "url(/images/background.png)" }}
+          className="relative bg-cover bg-center bg-no-repeat min-h-[600px] text-white space-y-6 p-4 md:p-12
+            bg-[url('/images/background-mobile.png')] 
+            md:bg-[url('/images/background-desktop.png')]"
         >
           {/* Add black overlay */}
           <div className="absolute inset-0 bg-black/50" />
