@@ -11,7 +11,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-manrope)", ...fontFamily.sans],
+        sans: ["VirageCorporate", ...fontFamily.sans],
+      },
+      fontWeight: {
+        normal: "400",
+        bold: "700",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -45,7 +49,7 @@ const config: Config = {
           foreground: "hsl(var(--destructive-foreground))",
         },
         matchain: {
-          background: "#151e2d",
+          blue: "hsl(243deg 100% 12.2%)",
           gold: "#a38946",
         },
         border: "hsl(var(--border))",
