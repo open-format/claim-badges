@@ -14,7 +14,7 @@ body {
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 243 100% 12.2%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -204,4 +204,28 @@ body {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.95);
   }
+}
+
+@font-face {
+  font-family: "VirageCorporate";
+  src: url("/public/fonts/VirageCorporate-Regular.ttf") format("ttf");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "VirageCorporate";
+  src: url("/public/fonts/VirageCorporate-Bold.ttf") format("ttf");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "VirageCorporate";
+  src: url("/public/fonts/VirageCorporate-Medium.ttf") format("ttf");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
