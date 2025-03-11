@@ -36,17 +36,17 @@ export default async function CommunityPage() {
         {/* HERO */}
         <Hero />
         {/* PERKS */}
-        <section className="bg-white mx-auto max-w-screen-lg space-y-12 p-4 text-primary">
+        <section className="bg-white mx-auto max-w-screen-lg space-y-12 p-4 md:p-0 text-primary">
           <div className="grid md:grid-cols-2 gap-4 items-center">
             <div className="space-y-6">
-              <div className="space-y-2">
-                <h1 className="font-medium">Become a PSG Icon:</h1>
-                <h1>The Limited Edition Gold Card NFT</h1>
-              </div>
               <div>
-                <h2 className="text-2xl">Tickets, Merch, Experiences & More.</h2>
-                <h2 className="text-2xl">Worth its Weight in Gold.</h2>
+                <h2>Exclusive PSG Gold Card: Coming Soon</h2>
+                <h2>Join the elite and win exclusive experiences.</h2>
               </div>
+              <h3>
+                Each Gold Card unlocks a Mystery box with Exclusive Air Jordans x PSG merchandise, a
+                limited edition NFT, and one of many experiences that could include:
+              </h3>
             </div>
             <div>
               <Image
@@ -58,7 +58,7 @@ export default async function CommunityPage() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 ">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 ">
             {PERKS.map((perk, i) => (
               <PerksCard key={perk.image + i} description={perk.description} image={perk.image} />
             ))}
@@ -76,12 +76,12 @@ export default async function CommunityPage() {
 // Perks Card
 function PerksCard({ description, image }: { description: string; image: string }) {
   return (
-    <div className="border rounded-lg p-4 text-primary">
-      <AspectRatio ratio={1 / 1} className="m-10">
-        <Image src={image} alt="Campaign" fill className="object-cover" />
+    <div className="border rounded-lg text-primary">
+      <AspectRatio ratio={2 / 1}>
+        <Image src={image} alt="Campaign" fill className="object-contain rounded-t-lg bg-primary" />
       </AspectRatio>
       <div>
-        <p className="text-center">{description}</p>
+        <p className="text-center font-medium p-4">{description}</p>
       </div>
     </div>
   );
@@ -90,23 +90,23 @@ function PerksCard({ description, image }: { description: string; image: string 
 // Perks
 const PERKS = [
   {
-    description: "Tickets for matches, galas, exclusive",
-    image: "/images/perks/tickets.svg",
+    description: "Tickets for Matches, Galas, Exclusive Experiences",
+    image: "/images/perks/free-tickets.png",
   },
   {
-    description: "Personalised video messages from the players",
-    image: "/images/perks/tickets.svg",
+    description: "Private Tour Of The Stadium, Meet The Team",
+    image: "/images/perks/stadium-tour.png",
   },
   {
-    description: "Private tour of the stadium, meeting the team",
-    image: "/images/perks/tickets.svg",
+    description: "Personalised Video Messages From The Players",
+    image: "/images/perks/video-from-the-team.png",
   },
   {
-    description: "$5000 of merch from our Nike Air Jordan partnership",
-    image: "/images/perks/tickets.svg",
+    description: "$5000 of Merch from our Nike Air Jordan Partnership",
+    image: "/images/perks/air-jordan.png",
   },
   {
-    description: "Over 70 VIP experiences up to grabs",
-    image: "/images/perks/tickets.svg",
+    description: "Over 70 VIP Experiences Up To Grabs",
+    image: "/images/perks/vip.png",
   },
 ];

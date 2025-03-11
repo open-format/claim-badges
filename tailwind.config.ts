@@ -14,7 +14,9 @@ const config: Config = {
         sans: ["VirageCorporate", ...fontFamily.sans],
       },
       fontWeight: {
+        narrow: "300",
         normal: "400",
+        medium: "500",
         bold: "700",
       },
       colors: {
