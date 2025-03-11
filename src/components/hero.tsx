@@ -21,7 +21,7 @@ export default function Hero() {
       <div className="relative z-10 space-y-6 max-w-screen-lg mx-auto">
         {/* HEADER */}
         <Header />
-        <div className="md:grid md:grid-cols-3 items-center gap-8 justify-between space-y-12">
+        <div className="md:grid md:grid-cols-3 items-center gap-8 justify-between space-y-12 md:space-y-0">
           {/* Text Content */}
           <div className="flex-1 space-y-12 md:space-y-8">
             <div className="space-y-12">
