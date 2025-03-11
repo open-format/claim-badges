@@ -21,25 +21,8 @@ export function TallyFormDialog({
   title = "Form",
   formId,
   trigger = <Button>Open Form</Button>,
-  onSubmit,
 }: TallyFormDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      // Debug the incoming message
-      console.log("Received message:", event.data);
-
-      if (typeof event.data === "object" && event.data.includes("Tally.FormSubmitted")) {
-        console.log("Form submitted!", event.data);
-        onSubmit?.();
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [onSubmit]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

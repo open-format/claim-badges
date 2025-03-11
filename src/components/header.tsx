@@ -9,7 +9,7 @@ export default function Header() {
   const { address } = useUserInfo();
   return (
     <div className="flex justify-between items-center">
-      <div className="h-[50px]">
+      <div className="w-[205px] h-[61px]">
         <img src="/images/matchain-logo-white.png" alt="Matchain Logo" className="w-full h-full" />
       </div>
       <div className="flex items-center space-x-6">

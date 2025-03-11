@@ -61,9 +61,9 @@ export default async function RootLayout({
       <head>
         <Script src="https://tally.so/widgets/embed.js" strategy="lazyOnload" />
       </head>
-      <body className={`${manrope.variable} antialiased`}>
+      <body>
         <Providers>
-          <main>{children}</main>
+          <main className="font-sans">{children}</main>
         </Providers>
         <Toaster position="top-center" />
       </body>

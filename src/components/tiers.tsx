@@ -12,17 +12,14 @@ export default function Tiers() {
     {
       level: 1,
       color: "#B87759", // Bronze
-      description: "Collectables, competitions & discounts",
     },
     {
       level: 2,
       color: "#A3A3A3", // Silver
-      description: "Priority access, presales & exclusive merch",
     },
     {
       level: 3,
       color: "#D4AF37", // Gold
-      description: "Player sessions, gift boxes, & priority ticket access",
     },
   ];
 
@@ -32,7 +29,7 @@ export default function Tiers() {
       variant="borderless"
     >
       {/* Coming Soon Banner */}
-      <div className="absolute -right-14 top-8 rotate-45 bg-[#1E4B7B] text-white px-12 py-1 text-sm font-semibold shadow-lg">
+      <div className="absolute -right-14 top-8 rotate-45 bg-primary text-white px-12 py-1 text-sm font-semibold shadow-lg">
         Coming Soon
       </div>
 
@@ -56,11 +53,9 @@ export default function Tiers() {
         </div>
 
         {/* Progress Bar */}
-        <Progress
-          value={progress}
-          className="h-3 rounded-full bg-white/20"
-          style={{ "--progress-background": "#1E4B7B" } as any}
-        />
+        <div className="p-1 bg-white rounded-full">
+          <Progress value={progress} className="h-5 rounded-full bg-white" />
+        </div>
 
         {/* Tiers Display */}
         <div className="grid grid-cols-3 gap-8 text-center">

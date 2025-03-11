@@ -36,7 +36,7 @@ export default function CommunityBadges({ setActiveTab }: { setActiveTab: (tab: 
             <div className="text-muted-foreground/80 text-4xl">🔒</div>
             <h3 className="text-xl font-semibold">Login to View Your Collection</h3>
             <p className="text-muted-foreground max-w-sm">
-              Sign in to start collecting and tracking your PSG badges and rewards.
+              Login to start collecting and tracking your PSG badges and rewards.
             </p>
             <div className="space-x-2">
               <LoginModalDialog initialMode="signup">

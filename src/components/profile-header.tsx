@@ -28,6 +28,7 @@ export default function Profile() {
   function handleLogout() {
     logout();
     Cookies.remove("address");
+    window.dispatchEvent(new Event("addressCookieChanged"));
     startTransition(async () => {
       const community = await fetchCommunity(process.env.NEXT_PUBLIC_COMMUNITY_ID as string);
       if (community) {
@@ -42,8 +43,10 @@ export default function Profile() {
     if (address) {
       Cookies.set("address", address);
       Cookies.set("chainName", ChainName.MATCHAIN);
+      window.dispatchEvent(new Event("addressCookieChanged"));
     } else {
       Cookies.remove("address");
+      window.dispatchEvent(new Event("addressCookieChanged"));
     }
   }, [address]);
 

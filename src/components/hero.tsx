@@ -42,6 +42,11 @@ export default function Hero() {
                     Become a member
                   </Button>
                 </LoginModalDialog>
+                <LoginModalDialog>
+                  <Button variant="ghost" size="lg">
+                    login
+                  </Button>
+                </LoginModalDialog>
               </div>
             )}
           </div>

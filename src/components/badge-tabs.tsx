@@ -10,7 +10,7 @@ export function BadgeTabs({ cnyRewardStatus }: { cnyRewardStatus: boolean }) {
   const [activeTab, setActiveTab] = useState("badges");
 
   return (
-    <div className="max-w-screen-lg mx-auto space-y-8">
+    <div className="max-w-screen-lg mx-auto space-y-8 min-h-[750px]">
       <h1>Your PSG Collectables</h1>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full space-x-4" variant="outline">

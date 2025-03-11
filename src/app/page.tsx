@@ -36,7 +36,7 @@ export default async function CommunityPage() {
         {/* HERO */}
         <Hero />
         {/* PERKS */}
-        <section className="bg-white text-black mx-auto max-w-screen-lg space-y-12 p-4">
+        <section className="bg-white mx-auto max-w-screen-lg space-y-12 p-4 text-primary">
           <div className="grid md:grid-cols-2 gap-4 items-center">
             <div className="space-y-6">
               <div className="space-y-2">
@@ -58,7 +58,7 @@ export default async function CommunityPage() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 ">
             {PERKS.map((perk, i) => (
               <PerksCard key={perk.image + i} description={perk.description} image={perk.image} />
             ))}
@@ -76,7 +76,7 @@ export default async function CommunityPage() {
 // Perks Card
 function PerksCard({ description, image }: { description: string; image: string }) {
   return (
-    <div className="border rounded-lg p-4">
+    <div className="border rounded-lg p-4 text-primary">
       <AspectRatio ratio={1 / 1} className="m-10">
         <Image src={image} alt="Campaign" fill className="object-cover" />
       </AspectRatio>

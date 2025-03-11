@@ -51,7 +51,7 @@ function Item({
       <CardFooter>
         {address && cnyRewardStatus ? (
           <TallyFormDialog
-            formId="mJM07J"
+            formId="3qvAZ5"
             title="Claim your reward"
             trigger={<Button>Claim</Button>}
           />
