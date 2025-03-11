@@ -23,24 +23,24 @@ export async function generateMetadata(): Promise<Metadata> {
     )}&accent=${encodeURIComponent(community?.metadata?.accent_color || "#6366F1")}`;
 
   return {
-    title: "Matchain x PSG - Global Fan Club",
-    description: "Take action and join the Paris Saint-Germain club to win exclusive prizes!",
+    title: "Matchain x PSG - Share your PSG Pride!",
+    description: "Take action with Paris Saint-Germain to win exclusive prizes!",
     openGraph: {
-      title: "Matchain x PSG - Global Fan Club",
-      description: "Take action and join the Paris Saint-Germain club to win exclusive prizes!",
+      title: "Matchain x PSG - Share your PSG Pride!",
+      description: "Take action with Paris Saint-Germain to win exclusive prizes!",
       images: [
         {
           url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: "Matchain x PSG - Global Fan Club",
+          alt: "Matchain x PSG - Share your PSG Pride!",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Matchain x PSG - Global Fan Club",
-      description: "Take action and join the Paris Saint-Germain club to win exclusive prizes!",
+      title: "Matchain x PSG - Share your PSG Pride!",
+      description: "Take action with Paris Saint-Germain to win exclusive prizes!",
       images: [ogImageUrl],
     },
   };
