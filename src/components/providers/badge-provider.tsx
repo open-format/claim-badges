@@ -2,10 +2,10 @@
 
 import { CLAIM_CONDITIONS, ClaimStatus } from "@/constants/claim-conditions";
 import { useConfetti } from "@/contexts/confetti-context";
+import { useAddress } from "@/hooks/useAddress";
 import { claimBadge as claimBadgeAPI, revalidate } from "@/lib/openformat"; // Keep your existing claimBadge import
 import dayjs from "dayjs";
-import Cookies from "js-cookie";
-import { type ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
+import { type ReactNode, createContext, useContext, useMemo, useState } from "react";
 import { toast } from "sonner"; // Import toast for error messages
 import type { Address } from "viem";
 
@@ -25,8 +25,7 @@ export const BadgeProvider: React.FC<{
   initialBadges: BadgeWithCollectedStatus[];
 }> = ({ children, initialBadges }) => {
   const [badges, setBadges] = useState<BadgeWithCollectedStatus[]>(initialBadges);
-  const address = Cookies.get("address");
-  console.log({ address });
+  const address = useAddress();
   const { triggerConfetti } = useConfetti();
 
   const sortBadges = (badgesToSort: BadgeWithCollectedStatus[]): BadgeWithCollectedStatus[] => {
@@ -106,44 +105,41 @@ export const BadgeProvider: React.FC<{
     return badges.filter((badge) => checkClaimStatus(badge).startsWith(ClaimStatus.Claimed));
   }, [badges, address]);
 
-  const claimBadgeAction = useCallback(
-    async (badge: BadgeWithCollectedStatus, rewardId?: string) => {
-      if (!address) {
-        toast.error("Please login to claim badges."); // Added login check
+  const claimBadgeAction = async (badge: BadgeWithCollectedStatus, rewardId?: string) => {
+    if (!address) {
+      toast.error("Please login to claim badges.");
+      return;
+    }
+
+    setBadges((currentBadges) =>
+      currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: true } : b))
+    );
+
+    try {
+      const result = await claimBadgeAPI(
+        badge.id as Address,
+        badge.name as string,
+        address as Address,
+        badge.metadataURI,
+        rewardId
+      );
+
+      if (!result.success) {
+        toast.info(result.message);
         return;
       }
 
+      revalidate();
+      toast.success("Badge claimed successfully!");
+      triggerConfetti();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "An unknown error occurred");
       setBadges((currentBadges) =>
-        currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: true } : b))
+        currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: false } : b))
       );
-
-      try {
-        const result = await claimBadgeAPI(
-          badge.id as Address,
-          badge.name as string,
-          address as Address,
-          badge.metadataURI,
-          rewardId
-        );
-
-        if (!result.success) {
-          toast.info(result.message);
-          return;
-        }
-
-        revalidate();
-        toast.success("Badge claimed successfully!");
-        triggerConfetti();
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "An unknown error occurred");
-        setBadges((currentBadges) =>
-          currentBadges.map((b) => (b.id === badge.id ? { ...b, isCollected: false } : b))
-        );
-        throw error;
-      }
-    },
-    [address, setBadges] // Dependencies for useCallback
-  );
+      throw error;
+    }
+  };
 
   return (
     <BadgeContext.Provider
