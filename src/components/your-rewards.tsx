@@ -56,7 +56,7 @@ function Item({
             trigger={<Button>Claim</Button>}
           />
         ) : address ? (
-          <Button>You didn't win this time</Button>
+          <Button disabled>You didn't win this time</Button>
         ) : (
           <LoginModalDialog>
             <Button>Login to reveal</Button>

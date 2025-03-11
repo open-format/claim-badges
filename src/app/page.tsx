@@ -31,14 +31,14 @@ export default async function CommunityPage() {
   }
 
   return (
-    <div className="sticky top-0 space-y-8">
+    <div className="sticky top-0 space-y-12 md:space-y-32">
       <BadgeProvider initialBadges={profile?.badges || community.badges}>
         {/* HERO */}
         <Hero />
         {/* PERKS */}
         <section className="bg-white mx-auto max-w-screen-lg space-y-12 p-4 md:p-0 text-primary">
-          <div className="grid md:grid-cols-2 gap-4 items-center">
-            <div className="space-y-6">
+          <div className="grid md:grid-cols-3 gap-4 items-center">
+            <div className="space-y-6 md:col-span-2">
               <div>
                 <h2>Exclusive PSG Gold Card: Coming Soon</h2>
                 <h2>Join the elite and win exclusive experiences.</h2>
@@ -48,12 +48,12 @@ export default async function CommunityPage() {
                 limited edition NFT, and one of many experiences that could include:
               </h3>
             </div>
-            <div>
+            <div className="flex justify-center">
               <Image
                 src="/images/gold-card.jpg"
                 alt="Gold Card"
-                width={500}
-                height={500}
+                width={350}
+                height={350}
                 className="rounded-2xl"
               />
             </div>
@@ -65,7 +65,7 @@ export default async function CommunityPage() {
           </div>
         </section>
         {/* Your PSG Collectables */}
-        <section id="rewards-section" className="bg-black text-white p-8 min-h-[500px]">
+        <section id="rewards-section" className="bg-black text-white p-8 md:p-24 min-h-[500px]">
           <BadgeTabs cnyRewardStatus={cnyRewardStatus} />
         </section>
       </BadgeProvider>
