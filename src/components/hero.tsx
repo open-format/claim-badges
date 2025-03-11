@@ -26,12 +26,12 @@ export default function Hero() {
           <div className="flex-1 space-y-12 md:space-y-8">
             <div className="space-y-6">
               <h1>
-                Rewarding our Fans;
+                Fuel your Passion.
                 <br /> On and off the pitch.
               </h1>
               <h3 className="font-narrow">
-                Take action with fellow fans and get rewarded, the higher your level the greater
-                your chances of winning.
+                Take action, climb the ranks, and unlock exclusive rewards. The higher your level,
+                the greater your chances of winning!
               </h3>
             </div>
             {/* CTA */}
