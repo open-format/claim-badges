@@ -7,11 +7,6 @@ import "./globals.css";
 import Providers from "./providers";
 import Script from "next/script";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-});
-
 export async function generateMetadata(): Promise<Metadata> {
   const community = await fetchCommunity(process.env.NEXT_PUBLIC_COMMUNITY_ID as string);
 
@@ -28,24 +23,24 @@ export async function generateMetadata(): Promise<Metadata> {
     )}&accent=${encodeURIComponent(community?.metadata?.accent_color || "#6366F1")}`;
 
   return {
-    title: community?.metadata?.title ?? "Community",
-    description: community?.metadata?.description ?? "Welcome to our community",
+    title: "Matchain x PSG - Global Fan Club",
+    description: "Take action and join the Paris Saint-Germain club to win exclusive prizes!",
     openGraph: {
-      title: community?.metadata?.title ?? "Community",
-      description: community?.metadata?.description ?? "Welcome to our community",
+      title: "Matchain x PSG - Global Fan Club",
+      description: "Take action and join the Paris Saint-Germain club to win exclusive prizes!",
       images: [
         {
           url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: community?.metadata?.title ?? "Community",
+          alt: "Matchain x PSG - Global Fan Club",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: community?.metadata?.title ?? "Community",
-      description: community?.metadata?.description ?? "Welcome to our community",
+      title: "Matchain x PSG - Global Fan Club",
+      description: "Take action and join the Paris Saint-Germain club to win exclusive prizes!",
       images: [ogImageUrl],
     },
   };
