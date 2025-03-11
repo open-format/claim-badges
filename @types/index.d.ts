@@ -149,6 +149,7 @@ type CampaignReward = {
   description: {
     authenticated: string;
     unauthenticated: string;
+    notWon: string;
   };
   image: string;
 };

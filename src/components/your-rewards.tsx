@@ -45,14 +45,20 @@ function Item({
       <CardHeader className="space-y-2">
         <CardTitle>{reward.name}</CardTitle>
         <CardDescription className="space-y-2">
-          <p>{address ? reward.description.authenticated : reward.description.unauthenticated}</p>
+          <p>
+            {address && cnyRewardStatus
+              ? reward.description.authenticated
+              : address && !cnyRewardStatus
+                ? reward.description.notWon
+                : reward.description.unauthenticated}
+          </p>
         </CardDescription>
       </CardHeader>
       <CardFooter>
         {address && cnyRewardStatus ? (
           <TallyFormDialog
             formId="3qvAZ5"
-            title="Claim your reward"
+            title="Claim your prize"
             trigger={<Button>Claim</Button>}
           />
         ) : address ? (
