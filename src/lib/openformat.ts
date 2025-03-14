@@ -35,7 +35,7 @@ export async function revalidate() {
 
 export async function getChainFromCommunityOrCookie(
   communityIdOrSlug?: string,
-  chain_id?: number
+  chain_id?: number,
 ): Promise<Chain | null> {
   let chain: Chain | null = null;
 
@@ -339,10 +339,10 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
       chain.apiChainName === ChainName.AURORA
         ? "aurora"
         : chain.apiChainName === ChainName.TURBO
-        ? "turbo"
-        : chain.apiChainName === ChainName.BASE
-        ? "base"
-        : "arbitrum-sepolia"
+          ? "turbo"
+          : chain.apiChainName === ChainName.BASE
+            ? "base"
+            : "arbitrum-sepolia",
     );
     const response = await apiClient.get(`/leaderboard?${params}`);
 
@@ -352,7 +352,7 @@ export async function generateLeaderboard(slugOrId: string): Promise<Leaderboard
         ...entry,
         handle: (await getUserHandle(entry.user as Address))?.username ?? "Anonymous",
         type: (await getUserHandle(entry.user as Address))?.type ?? "unknown",
-      }))
+      })),
     );
 
     return leaderboardWithHandles;
@@ -394,11 +394,18 @@ async function getNonce(address: string, retryCount = 0): Promise<number> {
 
 async function sendTransactionWithRetry(
   sendTransaction: (nonce: number) => Promise<void>,
-  maxRetries = 5
+  maxRetries = 5,
+  timeoutMs = 5000, // 5 seconds timeout
 ): Promise<void> {
   let lastError: Error | null = null;
+  const startTime = Date.now();
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
+    // Check if we've exceeded the timeout
+    if (Date.now() - startTime > timeoutMs) {
+      throw new Error("Failed to claim badge. Please try again later. Code: RPC_ERROR");
+    }
+
     try {
       const address = walletClient.account.address;
       const nonce = await getNonce(address);
@@ -406,15 +413,21 @@ async function sendTransactionWithRetry(
       await sendTransaction(nonce);
       return; // Success, exit the function
     } catch (error) {
-      lastError = error;
+      lastError = error as Error;
       console.error(`Transaction attempt ${attempt + 1} failed:`, error);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+      const remainingTime = timeoutMs - (Date.now() - startTime);
+      if (remainingTime <= 0) {
+        throw new Error("Failed to claim badge. Please try again later. Code: RPC_ERROR");
+      }
+
+      // Calculate delay for next retry, but don't exceed remaining time
+      const delay = Math.min(1000 * (attempt + 1), remainingTime);
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
-  // If we've exhausted all retries
-  throw new Error("Failed to claim badge. Please try again later.");
+  throw new Error("Failed to claim badge. Please try again later. Code: RPC_ERROR");
 }
 
 export async function claimBadge(
@@ -422,7 +435,7 @@ export async function claimBadge(
   badgeName: string,
   user: Address,
   ipfsHash: string,
-  rewardId?: string
+  rewardId?: string,
 ) {
   try {
     const alreadyOwns = await publicClient.readContract({

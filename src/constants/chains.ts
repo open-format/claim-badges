@@ -32,7 +32,7 @@ export const matchain: ViemChain = {
   },
   rpcUrls: {
     default: {
-      http: ["https://rpc.ankr.com/matchain_mainnet"],
+      http: [process.env.NEXT_PUBLIC_RPC_URL as string],
     },
   },
   blockExplorers: {
