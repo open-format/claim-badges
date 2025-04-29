@@ -97,7 +97,7 @@ export const chains: Record<ChainName, Chain> = {
   },
   matchain: {
     APP_FACTORY_ADDRESS: "0xf1811D1D6D9a718312c3c9466D8c4a2601f973e7",
-    SUBGRAPH_URL: "http://20.84.160.190:8000/subgraphs/name/open-format-matchain",
+    SUBGRAPH_URL: "https://subgraph.mobula.io/subgraphs/id/QmZa1CpWzSWiVTftZGMrFbyboHgW49j56h22vCd5fdmgVU",
     BLOCK_EXPLORER_URL: "https://matchscan.io/",
     apiChainName: "matchain",
     ...matchain,
