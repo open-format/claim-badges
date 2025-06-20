@@ -37,9 +37,9 @@ export const CLAIM_CONDITIONS: ClaimCondition[] = [
     badgeId: "0xd1b3f1e744d705b8c52faa3c6f769ddbd6ffe9d8",
   },
   {
-    badgeId: "0x953ffcf4bae9ac6c8a95be132468a2e82243078a",
-    claimableFrom: new Date("2025-06-15T00:00:00Z"),
-    claimableTo: new Date("2025-06-15T23:59:59Z"),
+    badgeId: "0x5b030b3f069662fef7fd46d3b7bc3f72e94d83b1",
+    claimableFrom: new Date("2025-06-20T00:00:00Z"),
+    claimableTo: new Date("2025-06-20T23:59:59Z"),
     hide: false,
   }
 ];
